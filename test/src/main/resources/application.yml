@@ -1,0 +1,7 @@
+elasticsearch:
+  server:
+    maxSize: 100
+    hosts:
+      - hostname: localhost
+        port: 9200
+        schemeName: http

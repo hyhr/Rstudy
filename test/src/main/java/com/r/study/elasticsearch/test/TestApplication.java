@@ -23,8 +23,9 @@ public class TestApplication {
             ConfigurableApplicationContext context = SpringApplication.run(TestApplication.class);
             DemoServiceImpl demoService = context.getBean(DemoServiceImpl.class);;
             ElasticSearchQueryWrapper<Demo> queryWrapper = new ElasticSearchQueryWrapper<>();
-            queryWrapper.match("name", "lily name");
-            System.out.println(demoService.searchList(queryWrapper));
+            queryWrapper.gte("id", 100);
+            queryWrapper.match("name", "name");
+            System.out.println(demoService.searchList(queryWrapper).toString());
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

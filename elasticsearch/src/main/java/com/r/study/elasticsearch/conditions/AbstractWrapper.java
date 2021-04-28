@@ -5,9 +5,11 @@ import com.r.study.elasticsearch.conditions.interfaces.Func;
 import com.r.study.elasticsearch.conditions.interfaces.Nested;
 import com.r.study.elasticsearch.enums.Operator;
 import com.r.study.elasticsearch.enums.SearchType;
-import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.springframework.util.Assert;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -25,6 +27,7 @@ public abstract class AbstractWrapper<T, R, Children extends AbstractWrapper<T, 
     protected final Children typedThis = (Children) this;
 
     protected final SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+    protected BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
 
     public SearchSourceBuilder getSearchSourceBuilder() {
         return sourceBuilder;
@@ -40,37 +43,47 @@ public abstract class AbstractWrapper<T, R, Children extends AbstractWrapper<T, 
     protected Children addCondition(R column, SearchType searchType, Object val) {
         switch (searchType){
             case MATCH:
-                sourceBuilder.query(QueryBuilders.matchQuery((String)column, val));
+                MatchQueryBuilder matchQuery = QueryBuilders.matchQuery((String) column, val);
+                boolQuery.must(matchQuery);
                 break;
             case TERM_QUERY:
-                sourceBuilder.query(QueryBuilders.termQuery((String)column, val));
+                TermQueryBuilder termQuery = QueryBuilders.termQuery((String) column, val);
+                boolQuery.must(termQuery);
                 break;
             case TERMS_QUERY:
-                //TODO val是数组类型
-                sourceBuilder.query(QueryBuilders.termsQuery((String)column, val));
+                Assert.isTrue(val.getClass().isArray(), "不符合的数据格式");
+                TermsQueryBuilder termsQuery = QueryBuilders.termsQuery((String) column, val);
+                boolQuery.must(termsQuery);
                 break;
             case WILDCARD:
-                sourceBuilder.query(QueryBuilders.wildcardQuery((String)column, Objects.toString(val)));
+                WildcardQueryBuilder wildcardQuery = QueryBuilders.wildcardQuery((String) column, Objects.toString(val));
+                boolQuery.must(wildcardQuery);
                 break;
             case MULTI_MATCH_QUERY:
                 String[] fieldName = (String[]) column;
-                sourceBuilder.query(QueryBuilders.multiMatchQuery(val, fieldName));
+                MultiMatchQueryBuilder multiMatchQuery = QueryBuilders.multiMatchQuery(val, fieldName);
+                boolQuery.must(multiMatchQuery);
                 break;
             case GT:
-                sourceBuilder.query(QueryBuilders.rangeQuery((String)column).gt(val));
+                RangeQueryBuilder gt = QueryBuilders.rangeQuery((String) column).gt(val);
+                boolQuery.must(gt);
                 break;
             case GTE:
-                sourceBuilder.query(QueryBuilders.rangeQuery((String)column).gte(val));
+                RangeQueryBuilder gte = QueryBuilders.rangeQuery((String) column).gte(val);
+                boolQuery.must(gte);
                 break;
             case LT:
-                sourceBuilder.query(QueryBuilders.rangeQuery((String)column).lt(val));
+                RangeQueryBuilder lt = QueryBuilders.rangeQuery((String) column).lt(val);
+                boolQuery.must(lt);
                 break;
             case LTE:
-                sourceBuilder.query(QueryBuilders.rangeQuery((String)column).lte(val));
+                RangeQueryBuilder lte = QueryBuilders.rangeQuery((String) column).lte(val);
+                boolQuery.must(lte);
                 break;
             default:
                 throw new RuntimeException("not support query");
         }
+        sourceBuilder.query(boolQuery);
         return typedThis;
     }
 

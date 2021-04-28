@@ -2,6 +2,7 @@ package com.r.study.elasticsearch.service;
 
 import com.alibaba.fastjson.JSON;
 import com.r.study.elasticsearch.conditions.query.ElasticSearchQueryWrapper;
+import com.r.study.elasticsearch.config.ElasticSearchProperties;
 import org.elasticsearch.action.admin.indices.alias.Alias;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
@@ -24,8 +25,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.beans.BeanMap;
 import org.springframework.util.Assert;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
@@ -47,8 +50,19 @@ public class ServiceImpl<T> implements IService<T> {
     protected final String index = entityClass.getSimpleName().toLowerCase();
     protected String alias;
     protected String aliasDecorate = "_";
+    protected Integer maxSize = 10;
 
-    {
+    @Autowired
+    protected RestHighLevelClient restHighLevelClient;
+
+    @Autowired
+    protected ElasticSearchProperties properties;
+
+    @PostConstruct
+    public void init() {
+        if (properties.getMaxSize() != null && properties.getMaxSize() > 0) {
+            maxSize = properties.getMaxSize();
+        }
         //TODO 断言需要注解
         com.r.study.elasticsearch.annotation.Alias annotation = entityClass.getAnnotation(com.r.study.elasticsearch.annotation.Alias.class);
         if (annotation != null) {
@@ -57,9 +71,6 @@ public class ServiceImpl<T> implements IService<T> {
             alias = index + aliasDecorate;
         }
     }
-
-    @Autowired
-    protected RestHighLevelClient restHighLevelClient;
 
     /**
      * 判断索引是否存在
@@ -118,10 +129,11 @@ public class ServiceImpl<T> implements IService<T> {
     @Override
     public List<T> searchList(ElasticSearchQueryWrapper elasticSearchQueryWrapper) throws Exception {
         SearchSourceBuilder searchSourceBuilder = elasticSearchQueryWrapper.getSearchSourceBuilder();
-        List<T> list;
        // 组装查询条件
+        searchSourceBuilder.size(maxSize);
         SearchRequest searchRequest = new SearchRequest().indices(index);
         searchRequest.source(searchSourceBuilder);
+        System.out.println(searchRequest);
         SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
         log.debug(JSON.toJSONString(searchResponse));
         SearchHits searchHits = searchResponse.getHits();
@@ -142,12 +154,13 @@ public class ServiceImpl<T> implements IService<T> {
     }
 
     protected List<T> parseSearchResponse(SearchResponse searchResponse) throws InstantiationException, IllegalAccessException {
-        List<T> list = new ArrayList<>();
         SearchHit[] results = searchResponse.getHits().getHits();
+        List<T> list = new ArrayList<>(results.length);
         for (SearchHit hit : results) {
             Map<String, Object> sourceAsMap = hit.getSourceAsMap();
             T instance = entityClass.newInstance();
-            BeanUtils.copyProperties(sourceAsMap, instance);
+            BeanMap beanMap = BeanMap.create(instance);
+            beanMap.putAll(sourceAsMap);
             list.add(instance);
         }
         return list;
