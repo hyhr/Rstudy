@@ -7,9 +7,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
-import java.util.ArrayList;
-import java.util.Collections;
-
 /**
  * date 2021-04-27 9:36
  *
@@ -31,6 +28,12 @@ public class TestApplication {
 //                                .gt("id", 309591447)
 //                                .lt("id", 100));
             System.out.println(demoService.searchList(queryWrapper).toString());
+            System.out.println(demoService.searchCount(new ElasticSearchQueryWrapper().match("id", "309882309")));
+            Demo source = new Demo();
+            source.setName("name" + System.currentTimeMillis()/1000);
+            demoService.updateById(source, "309882309");
+            System.out.println(demoService.searchList(new ElasticSearchQueryWrapper().termQuery("id", "309882309")));
+            System.out.println(demoService.deleteById("309882309"));
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

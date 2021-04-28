@@ -1,8 +1,10 @@
 package com.r.study.elasticsearch.service;
 
 import com.r.study.elasticsearch.conditions.query.ElasticSearchQueryWrapper;
+import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +20,12 @@ public interface IService<T> {
      * @return
      */
     RestHighLevelClient getClient();
+
+    /**
+     * 获取低水平客户端
+     * @return
+     */
+    RestClient getLowLevelClient();
 
     /**
      * 判断索引是否存在
@@ -50,4 +58,19 @@ public interface IService<T> {
      * @return
      */
     List<Map<String,T>> searchList(ElasticSearchQueryWrapper<T> condition) throws Exception;
+
+    /**
+     * 根据查询条件查询总数
+     * @param query 查询条件
+     * @return
+     */
+    Long searchCount(ElasticSearchQueryWrapper query) throws Exception;
+
+     /**
+     * 批量删除操作 根据id
+     * @param ids
+     * @return
+     * @throws IOException
+     */
+    boolean deleteById(String... ids) throws IOException;
 }

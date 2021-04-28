@@ -10,7 +10,6 @@ import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.core.CountRequest;
 import org.elasticsearch.client.core.CountResponse;
 import org.elasticsearch.common.xcontent.XContentType;
@@ -69,26 +68,6 @@ public class AbstractElasticSearchService<T> extends ServiceImpl<T> {
         Assert.hasLength(id,"保存的时候必须指定一个唯一的Id参数");
     }
 
-
-    /**
-     * 批量删除操作 根据id
-     * @param ids
-     * @return
-     * @throws IOException
-     */
-    public boolean deleteBatchByDocumentId(String... ids) throws IOException {
-        checkIndex();
-        BulkRequest bulkRequest = new BulkRequest();
-        for (String id : ids) {
-            DeleteRequest deleteRequest = new DeleteRequest(index, id);
-            bulkRequest.add(deleteRequest);
-        }
-        BulkResponse delete = restHighLevelClient.bulk(bulkRequest, RequestOptions.DEFAULT);
-        log.info("删除成功返回状态为 {}",delete.status().getStatus());
-        return true;
-    }
-
-
     /**
      * 通过documentId判断文档是否存在
      * @param index  索引，类似数据库
@@ -102,25 +81,6 @@ public class AbstractElasticSearchService<T> extends ServiceImpl<T> {
         request.fetchSourceContext(new FetchSourceContext(false));
         request.storedFields("_none_");
         return restHighLevelClient.exists(request, RequestOptions.DEFAULT);
-    }
-
-    /**
-     * 获取低水平客户端
-     * @return
-     */
-    public RestClient getLowLevelClient() {
-        return restHighLevelClient.getLowLevelClient();
-    }
-
-    public Long searchCount(ElasticSearchQueryWrapper query) throws Exception {
-        checkIndex();
-        CountRequest countRequest = new CountRequest(index);
-        //条件
-
-        countRequest.query(buildeRequest(query));
-        CountResponse response = restHighLevelClient.count(countRequest,RequestOptions.DEFAULT);
-        long length = response.getCount();
-        return length;
     }
 
     private QueryBuilder buildeRequest(ElasticSearchQueryWrapper query) {

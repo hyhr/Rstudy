@@ -5,12 +5,18 @@ import com.r.study.elasticsearch.conditions.query.ElasticSearchQueryWrapper;
 import com.r.study.elasticsearch.config.ElasticSearchProperties;
 import org.elasticsearch.action.admin.indices.alias.Alias;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
+import org.elasticsearch.action.bulk.BulkRequest;
+import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.core.CountRequest;
+import org.elasticsearch.client.core.CountResponse;
 import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.CreateIndexResponse;
 import org.elasticsearch.client.indices.GetIndexRequest;
@@ -78,6 +84,15 @@ public class ServiceImpl<T> implements IService<T> {
     @Override
     public RestHighLevelClient getClient() {
         return this.restHighLevelClient;
+    }
+
+    /**
+     * 获取低水平客户端
+     * @return
+     */
+    @Override
+    public RestClient getLowLevelClient() {
+        return restHighLevelClient.getLowLevelClient();
     }
 
     /**
@@ -150,6 +165,37 @@ public class ServiceImpl<T> implements IService<T> {
         } else {
             return Collections.emptyList();
         }
+    }
+
+    /**
+     * 根据查询条件查询总数
+     * @param query 查询条件
+     * @return
+     */
+    @Override
+    public Long searchCount(ElasticSearchQueryWrapper query) throws Exception {
+        CountRequest request = new CountRequest().query(query.getSearchSourceBuilder().query());
+        CountResponse response = restHighLevelClient.count(request,RequestOptions.DEFAULT);
+        return response.getCount();
+    }
+
+    /**
+     * 批量删除操作 根据id
+     * @param ids
+     * @return
+     * @throws IOException
+     */
+    @Override
+    public boolean deleteById(String... ids) throws IOException {
+        checkIndex();
+        BulkRequest bulkRequest = new BulkRequest();
+        for (String id : ids) {
+            DeleteRequest deleteRequest = new DeleteRequest(index, id);
+            bulkRequest.add(deleteRequest);
+        }
+        BulkResponse delete = restHighLevelClient.bulk(bulkRequest, RequestOptions.DEFAULT);
+        log.info("删除成功返回状态为 {}",delete.status().getStatus());
+        return true;
     }
 
     protected void checkIndex() throws IOException {
