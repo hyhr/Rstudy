@@ -1,6 +1,8 @@
 elasticsearch:
   server:
+    # es 默认最大条数
     maxSize: 100
+    # es 节点信息
     hosts:
       - hostname: localhost
         port: 9200

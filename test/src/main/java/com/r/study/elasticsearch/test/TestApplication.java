@@ -22,9 +22,14 @@ public class TestApplication {
         try {
             ConfigurableApplicationContext context = SpringApplication.run(TestApplication.class);
             DemoServiceImpl demoService = context.getBean(DemoServiceImpl.class);;
+
+
             ElasticSearchQueryWrapper<Demo> queryWrapper = new ElasticSearchQueryWrapper<>();
-            queryWrapper.gte("id", 100);
-            queryWrapper.match("name", "name");
+            queryWrapper.select("id", "name")
+                        .match("name", "name").gt("id", 309591447);
+//                        .or(new ElasticSearchQueryWrapper<Demo>().or()
+//                                .gt("id", 309591447)
+//                                .lt("id", 100));
             System.out.println(demoService.searchList(queryWrapper).toString());
         } catch (Exception e) {
             e.printStackTrace();

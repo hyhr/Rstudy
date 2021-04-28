@@ -1,6 +1,7 @@
 package com.r.study.elasticsearch.conditions.query;
 
 import com.r.study.elasticsearch.conditions.AbstractWrapper;
+import com.r.study.elasticsearch.enums.Operator;
 import com.r.study.elasticsearch.enums.SearchType;
 import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
@@ -49,64 +50,103 @@ public class ElasticSearchQueryWrapper<T> extends AbstractWrapper<T, String, Ela
     public ElasticSearchQueryWrapper(){}
 
     @Override
-    protected ElasticSearchQueryWrapper<T> instance() {
-        return null;
-    }
-
-    @Override
     public ElasticSearchQueryWrapper<T> match(String column, Object val) {
-        return addCondition(column, SearchType.MATCH, val);
+        return addCondition(column, val, SearchType.MATCH);
     }
 
     @Override
     public ElasticSearchQueryWrapper<T> termQuery(String column, Object val) {
-        return addCondition(column, SearchType.TERM_QUERY, val);
+        return addCondition(column, val, SearchType.TERM_QUERY);
     }
 
     @Override
     public ElasticSearchQueryWrapper<T> termsQuery(String column, Object val) {
-        return addCondition(column, SearchType.TERMS_QUERY, val);
+        return addCondition(column, val, SearchType.TERMS_QUERY);
     }
 
     @Override
     public ElasticSearchQueryWrapper<T> wildcard(String column, Object val) {
-        return addCondition(column, SearchType.WILDCARD, val);
+        return addCondition(column, val, SearchType.WILDCARD);
     }
 
     @Override
     public ElasticSearchQueryWrapper<T> multiMatchQuery(String column, Object val) {
-        return addCondition(column, SearchType.MULTI_MATCH_QUERY, val);
+        return addCondition(column, val, SearchType.MULTI_MATCH_QUERY);
     }
 
     @Override
     public ElasticSearchQueryWrapper<T> gt(String column, Object val) {
-        return addCondition(column, SearchType.GT, val);
+        return addCondition(column, val, SearchType.GT);
     }
 
     @Override
     public ElasticSearchQueryWrapper<T> gte(String column, Object val) {
-        return addCondition(column, SearchType.GTE, val);
+        return addCondition(column, val, SearchType.GTE);
     }
 
     @Override
     public ElasticSearchQueryWrapper<T> lt(String column, Object val) {
-        return addCondition(column, SearchType.LT, val);
+        return addCondition(column, val, SearchType.LT);
     }
 
     @Override
     public ElasticSearchQueryWrapper<T> lte(String column, Object val) {
-        return addCondition(column, SearchType.LTE, val);
+        return addCondition(column, val, SearchType.LTE);
     }
 
     @Override
     public ElasticSearchQueryWrapper<T> in(String column, Collection<?> coll) {
-        return addCondition(column, SearchType.IN, coll);
+        return addCondition(column, coll, SearchType.IN);
     }
 
     @Override
     public ElasticSearchQueryWrapper<T> notIn(String column, Collection<?> coll) {
-        return addCondition(column, SearchType.NOT_IN, coll);
+        return addCondition(column, coll, SearchType.NOT_IN);
     }
+
+    @Override
+    public ElasticSearchQueryWrapper<T> or() {
+        this.operator = Operator.SHOULD;
+        return typedThis;
+    }
+
+    @Override
+    public ElasticSearchQueryWrapper<T> not() {
+        this.operator = Operator.MUST_NOT;
+        return typedThis;
+    }
+
+    @Override
+    public ElasticSearchQueryWrapper<T> filter() {
+        this.operator = Operator.FILTER;
+        return typedThis;
+    }
+
+    @Override
+    public ElasticSearchQueryWrapper<T> and() {
+        return typedThis;
+    }
+
+    @Override
+    public ElasticSearchQueryWrapper<T> or(AbstractWrapper wrapper) {
+        return addNestedCondition(Operator.SHOULD, wrapper);
+    }
+
+    @Override
+    public ElasticSearchQueryWrapper<T> not(AbstractWrapper wrapper) {
+        return addNestedCondition(Operator.MUST_NOT, wrapper);
+    }
+
+    @Override
+    public ElasticSearchQueryWrapper<T> filter(AbstractWrapper wrapper) {
+        return addNestedCondition(Operator.FILTER, wrapper);
+    }
+
+    @Override
+    public ElasticSearchQueryWrapper<T> and(AbstractWrapper wrapper) {
+        return addNestedCondition(Operator.MUST, wrapper);
+    }
+
 
     @Override
     public ElasticSearchQueryWrapper<T> groupBy(String... columns) {

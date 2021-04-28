@@ -1,6 +1,7 @@
 package com.r.study.elasticsearch.service;
 
 import com.r.study.elasticsearch.conditions.query.ElasticSearchQueryWrapper;
+import org.elasticsearch.client.RestHighLevelClient;
 
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,12 @@ import java.util.Map;
  * @author HeYiHui
  **/
 public interface IService<T> {
+
+    /**
+     * 获取client
+     * @return
+     */
+    RestHighLevelClient getClient();
 
     /**
      * 判断索引是否存在

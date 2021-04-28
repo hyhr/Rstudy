@@ -64,7 +64,7 @@ public interface Compare<Children, R> extends Serializable {
      * @param val       值
      * @return children
      */
-    Children gt( R column, Object val);
+    Children gt(R column, Object val);
 
     /**
      * 大于等于
@@ -73,7 +73,7 @@ public interface Compare<Children, R> extends Serializable {
      * @param val       值
      * @return children
      */
-    Children gte( R column, Object val);
+    Children gte(R column, Object val);
 
     /**
      * 小于
@@ -82,7 +82,7 @@ public interface Compare<Children, R> extends Serializable {
      * @param val       值
      * @return children
      */
-    Children lt( R column, Object val);
+    Children lt(R column, Object val);
 
     /**
      * 小于等于

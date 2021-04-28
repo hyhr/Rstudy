@@ -5,13 +5,13 @@ import com.r.study.elasticsearch.conditions.interfaces.Func;
 import com.r.study.elasticsearch.conditions.interfaces.Nested;
 import com.r.study.elasticsearch.enums.Operator;
 import com.r.study.elasticsearch.enums.SearchType;
-import org.elasticsearch.index.query.*;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.util.Assert;
 
-import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 /**
  * date 2021-04-26 13:54
@@ -27,8 +27,12 @@ public abstract class AbstractWrapper<T, R, Children extends AbstractWrapper<T, 
     protected final Children typedThis = (Children) this;
 
     protected final SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-    protected BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+    protected BoolQueryBuilder boolQuery;
+    protected Operator operator = Operator.MUST;
 
+    private BoolQueryBuilder getBoolQueryBuilder() {
+        return boolQuery;
+    }
     public SearchSourceBuilder getSearchSourceBuilder() {
         return sourceBuilder;
     }
@@ -40,98 +44,95 @@ public abstract class AbstractWrapper<T, R, Children extends AbstractWrapper<T, 
      * @param searchType 关键词
      * @param val        条件值
      */
-    protected Children addCondition(R column, SearchType searchType, Object val) {
+    protected Children addCondition(R column, Object val, SearchType searchType) {
+        return this.addCondition(column, val, searchType, operator);
+    }
+
+    /**
+     * 普通查询条件
+     *
+     * @param column     属性
+     * @param searchType 关键词
+     * @param val        条件值
+     */
+    protected Children addCondition(R column, Object val, SearchType searchType, Operator operator) {
+        QueryBuilder queryBuilder = null;
         switch (searchType){
             case MATCH:
-                MatchQueryBuilder matchQuery = QueryBuilders.matchQuery((String) column, val);
-                boolQuery.must(matchQuery);
+                queryBuilder = QueryBuilders.matchQuery((String) column, val);
                 break;
             case TERM_QUERY:
-                TermQueryBuilder termQuery = QueryBuilders.termQuery((String) column, val);
-                boolQuery.must(termQuery);
+                queryBuilder = QueryBuilders.termQuery((String) column, val);
                 break;
             case TERMS_QUERY:
                 Assert.isTrue(val.getClass().isArray(), "不符合的数据格式");
-                TermsQueryBuilder termsQuery = QueryBuilders.termsQuery((String) column, val);
-                boolQuery.must(termsQuery);
+                queryBuilder = QueryBuilders.termsQuery((String) column, val);
                 break;
             case WILDCARD:
-                WildcardQueryBuilder wildcardQuery = QueryBuilders.wildcardQuery((String) column, Objects.toString(val));
-                boolQuery.must(wildcardQuery);
+                queryBuilder = QueryBuilders.wildcardQuery((String) column, Objects.toString(val));
                 break;
             case MULTI_MATCH_QUERY:
                 String[] fieldName = (String[]) column;
-                MultiMatchQueryBuilder multiMatchQuery = QueryBuilders.multiMatchQuery(val, fieldName);
-                boolQuery.must(multiMatchQuery);
+                queryBuilder = QueryBuilders.multiMatchQuery(val, fieldName);
                 break;
             case GT:
-                RangeQueryBuilder gt = QueryBuilders.rangeQuery((String) column).gt(val);
-                boolQuery.must(gt);
+                queryBuilder = QueryBuilders.rangeQuery((String) column).gt(val);
                 break;
             case GTE:
-                RangeQueryBuilder gte = QueryBuilders.rangeQuery((String) column).gte(val);
-                boolQuery.must(gte);
+                queryBuilder = QueryBuilders.rangeQuery((String) column).gte(val);
                 break;
             case LT:
-                RangeQueryBuilder lt = QueryBuilders.rangeQuery((String) column).lt(val);
-                boolQuery.must(lt);
+                queryBuilder = QueryBuilders.rangeQuery((String) column).lt(val);
                 break;
             case LTE:
-                RangeQueryBuilder lte = QueryBuilders.rangeQuery((String) column).lte(val);
-                boolQuery.must(lte);
+                queryBuilder = QueryBuilders.rangeQuery((String) column).lte(val);
                 break;
             default:
                 throw new RuntimeException("not support query");
         }
-        sourceBuilder.query(boolQuery);
+        if (boolQuery == null) {
+            boolQuery = QueryBuilders.boolQuery();
+            sourceBuilder.query(boolQuery);
+        }
+        switch (operator) {
+            case SHOULD:
+                boolQuery.should(queryBuilder);
+                break;
+            case MUST_NOT:
+                boolQuery.mustNot(queryBuilder);
+                break;
+            case FILTER:
+                boolQuery.filter(queryBuilder);
+                break;
+            case MUST:
+                boolQuery.must(queryBuilder);
+                break;
+            default:
+                throw new RuntimeException("not support operator");
+        }
         return typedThis;
-    }
-
-    @Override
-    public Children or(Consumer<Children> consumer) {
-        return addNestedCondition(Operator.OR, consumer);
-    }
-
-    @Override
-    public Children not(Consumer<Children> consumer) {
-        return addNestedCondition(Operator.NOT, consumer);
-    }
-
-    @Override
-    public Children filter(Consumer<Children> consumer) {
-        return addNestedCondition(Operator.FILTER, consumer);
-    }
-
-    @Override
-    public Children and(Consumer<Children> consumer) {
-        return addNestedCondition(Operator.AND, consumer);
     }
 
     /**
      * 多重嵌套查询条件
      */
-    protected Children addNestedCondition(Operator operator, Consumer<Children> consumer) {
-        //TODO 连接待实现
-        final Children instance = instance();
-        consumer.accept(instance);
+    protected Children addNestedCondition(Operator operator, AbstractWrapper wrapper) {
         switch (operator) {
-            case OR:
+            case SHOULD:
+                boolQuery.must().add(wrapper.getBoolQueryBuilder());
                 break;
-            case NOT:
-
+            case MUST_NOT:
+                boolQuery.mustNot(wrapper.getBoolQueryBuilder());
                 break;
             case FILTER:
-
+                boolQuery.filter(wrapper.getBoolQueryBuilder());
                 break;
-            case AND:
-
+            case MUST:
+                boolQuery.must(wrapper.getBoolQueryBuilder());
                 break;
+            default:
+                throw new RuntimeException("not support nested operator");
         }
-        return instance;
+        return typedThis;
     }
-
-    /**
-     * 子类返回一个自己的新对象
-     */
-    protected abstract Children instance();
 }

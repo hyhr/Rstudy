@@ -23,7 +23,6 @@ import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.beans.BeanMap;
 import org.springframework.util.Assert;
@@ -70,6 +69,15 @@ public class ServiceImpl<T> implements IService<T> {
         } else {
             alias = index + aliasDecorate;
         }
+    }
+
+    /**
+     * 获取client
+     * @return
+     */
+    @Override
+    public RestHighLevelClient getClient() {
+        return this.restHighLevelClient;
     }
 
     /**

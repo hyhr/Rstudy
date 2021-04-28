@@ -1,5 +1,7 @@
 package com.r.study.elasticsearch.conditions.interfaces;
 
+import com.r.study.elasticsearch.conditions.AbstractWrapper;
+
 import java.io.Serializable;
 import java.util.function.Consumer;
 
@@ -14,15 +16,29 @@ import java.util.function.Consumer;
 public interface Nested<Param, Children> extends Serializable {
 
     /**
-     * OR 嵌套
-     * <p>
-     * 例: or(i -&gt; i.eq("name", "李白").ne("status", "活着"))
-     * </p>
+     * OR 连接
      *
-     * @param consumer  消费函数
      * @return children
      */
-    Children or( Consumer<Param> consumer);
+    Children or();
+
+    /**
+     * not 连接
+     * @return children
+     */
+    Children not();
+
+    /**
+     * 正常连接
+     * @return children
+     */
+    Children filter();
+
+    /**
+     * AND 连接
+     * @return children
+     */
+    Children and();
 
     /**
      * OR 嵌套
@@ -30,10 +46,21 @@ public interface Nested<Param, Children> extends Serializable {
      * 例: or(i -&gt; i.eq("name", "李白").ne("status", "活着"))
      * </p>
      *
-     * @param consumer  消费函数
+     * @param wrapper  条件wrapper
      * @return children
      */
-    Children not(Consumer<Param> consumer);
+    Children or(AbstractWrapper wrapper);
+
+    /**
+     * OR 嵌套
+     * <p>
+     * 例: or(i -&gt; i.eq("name", "李白").ne("status", "活着"))
+     * </p>
+     *
+     * @param wrapper  条件wrapper
+     * @return children
+     */
+    Children not(AbstractWrapper wrapper);
 
     /**
      * 正常嵌套 不带 AND 或者 OR
@@ -41,10 +68,10 @@ public interface Nested<Param, Children> extends Serializable {
      * 例: nested(i -&gt; i.eq("name", "李白").ne("status", "活着"))
      * </p>
      *
-     * @param consumer  消费函数
+     * @param wrapper  条件wrapper
      * @return children
      */
-    Children filter(Consumer<Param> consumer);
+    Children filter(AbstractWrapper wrapper);
 
     /**
      * AND 嵌套
@@ -52,8 +79,8 @@ public interface Nested<Param, Children> extends Serializable {
      * 例: and(i -&gt; i.eq("name", "李白").ne("status", "活着"))
      * </p>
      *
-     * @param consumer  消费函数
+     * @param wrapper  条件wrapper
      * @return children
      */
-    Children and(Consumer<Param> consumer);
+    Children and(AbstractWrapper wrapper);
 }

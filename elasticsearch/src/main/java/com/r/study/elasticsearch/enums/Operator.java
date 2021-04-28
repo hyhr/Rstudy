@@ -6,11 +6,25 @@ package com.r.study.elasticsearch.enums;
  * @author HeYiHui
  **/
 public enum Operator {
-    OR,
+    SHOULD(1),
     //不等于 这是等会比较
-    NOT,
+    MUST_NOT(2),
     //比较大于小 这种 就用过滤来进行
-    FILTER,
+    FILTER(3),
     //and 查询
-    AND
+    MUST(4);
+
+    private Integer code;
+
+    Operator(int code) {
+        this.code = code;
+    }
+
+    public Integer getCode() {
+        return code;
+    }
+
+    public void setCode(Integer code) {
+        this.code = code;
+    }
 }

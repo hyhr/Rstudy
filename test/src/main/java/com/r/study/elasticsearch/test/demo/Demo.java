@@ -9,14 +9,14 @@ import com.r.study.elasticsearch.annotation.Alias;
  **/
 @Alias("demo_alias")
 public class Demo {
-    private int id;
+    private Integer id;
     private String name;
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
