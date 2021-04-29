@@ -1,6 +1,6 @@
 logging:
   level:
-    com.r: debug
+    com.r.study: debug
 
 elasticsearch:
   server:

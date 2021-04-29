@@ -17,8 +17,6 @@ public class EsHost implements Serializable {
 
     private String schemeName;
 
-    private InetAddress address;
-
     public EsHost() {}
 
     public EsHost(String hostname, int port) {
@@ -55,13 +53,5 @@ public class EsHost implements Serializable {
 
     public void setSchemeName(String schemeName) {
         this.schemeName = schemeName;
-    }
-
-    public InetAddress getAddress() {
-        return address;
-    }
-
-    public void setAddress(InetAddress address) {
-        this.address = address;
     }
 }
