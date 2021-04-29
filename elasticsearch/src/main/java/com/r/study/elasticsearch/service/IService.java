@@ -54,17 +54,24 @@ public interface IService<T> {
     <T> void updateById(T source, String id) throws Exception;
 
     /**
+     * 根据id查询实体
+     * @param id
+     * @return
+     */
+    T searchOne(Object id) throws Exception;
+
+    /**
      * 根据查询条件查询List
      * @return
      */
-    List<Map<String,T>> searchList(ElasticSearchQueryWrapper<T> condition) throws Exception;
+    List<T> searchList(ElasticSearchQueryWrapper<T> condition) throws Exception;
 
     /**
      * 根据查询条件查询总数
      * @param query 查询条件
      * @return
      */
-    Long searchCount(ElasticSearchQueryWrapper query) throws Exception;
+    Long searchCount(ElasticSearchQueryWrapper<T> query) throws Exception;
 
      /**
      * 批量删除操作 根据id

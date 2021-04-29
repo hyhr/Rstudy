@@ -4,12 +4,13 @@ import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
-import javax.annotation.PreDestroy;
 import java.util.List;
 
 /**
@@ -20,19 +21,42 @@ import java.util.List;
 @EnableConfigurationProperties({ElasticSearchProperties.class})
 public class ElasticSearchAutoConfig {
 
+    private final Logger log = LoggerFactory.getLogger(ElasticSearchAutoConfig.class);
+
     @Autowired
     private ElasticSearchProperties properties;
 
     @Bean
     @ConditionalOnMissingBean
     public RestHighLevelClient getRestHighLevelClient() {
-        List<EsHost> esHostList = properties.getHosts();
-        HttpHost[] httpHosts = new HttpHost[esHostList.size()];
-        for (int i = 0; i < esHostList.size(); i++) {
-            EsHost esHost = esHostList.get(i);
-            httpHosts[i] = new HttpHost(esHost.getHostname(), esHost.getPort(), esHost.getSchemeName());
+        try {
+            List<EsHost> esHostList = properties.getHosts();
+            HttpHost[] httpHosts = new HttpHost[esHostList.size()];
+            RestClientBuilder builder = null;
+            if (httpHosts.length > 0) {
+                for (int i = 0; i < esHostList.size(); i++) {
+                    EsHost esHost = esHostList.get(i);
+                    httpHosts[i] = new HttpHost(esHost.getHostname(), esHost.getPort(), esHost.getSchemeName());
+                }
+                builder = RestClient.builder(httpHosts);
+            } else {
+                //配置默认
+                builder = RestClient.builder(new HttpHost("localhost", 9200));
+            }
+            // 配置线程
+            int maxConnTotal = properties.getMaxConnTotal() != null ? properties.getMaxConnTotal() : 50;
+            int maxConnPerRoute = properties.getMaxConnPerRoute() != null ? properties.getMaxConnPerRoute() : 10;
+            builder.setHttpClientConfigCallback(httpClientBuilder -> {
+                // 设置最大连接数
+                httpClientBuilder.setMaxConnTotal(maxConnTotal);
+                // 设置每个route最大连接数
+                httpClientBuilder.setMaxConnPerRoute(maxConnPerRoute);
+                return httpClientBuilder;
+            });
+            return new RestHighLevelClient(builder);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         }
-        RestClientBuilder builder = RestClient.builder(httpHosts);
-        return new RestHighLevelClient(builder);
+        return null;
     }
 }

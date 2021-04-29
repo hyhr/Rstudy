@@ -15,8 +15,21 @@ import java.util.List;
 @ConfigurationProperties(prefix = "elasticsearch.server")
 public class ElasticSearchProperties {
 
+    /**
+     * es 默认最大条数
+     */
     private Integer maxSize;
-
+    /**
+     * 最大连接数
+     */
+    private Integer maxConnTotal;
+    /**
+     * 每个route最大连接数
+     */
+    private Integer maxConnPerRoute;
+    /**
+     * 节点
+     */
     private List<EsHost> hosts;
 
     public List<EsHost> getHosts() {
@@ -33,5 +46,21 @@ public class ElasticSearchProperties {
 
     public void setMaxSize(Integer maxSize) {
         this.maxSize = maxSize;
+    }
+
+    public Integer getMaxConnTotal() {
+        return maxConnTotal;
+    }
+
+    public void setMaxConnTotal(Integer maxConnTotal) {
+        this.maxConnTotal = maxConnTotal;
+    }
+
+    public Integer getMaxConnPerRoute() {
+        return maxConnPerRoute;
+    }
+
+    public void setMaxConnPerRoute(Integer maxConnPerRoute) {
+        this.maxConnPerRoute = maxConnPerRoute;
     }
 }

@@ -21,6 +21,8 @@ import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.CreateIndexResponse;
 import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -145,12 +147,32 @@ public class ServiceImpl<T> implements IService<T> {
     }
 
     /**
+     * 根据id查询实体
+     * @param id
+     * @return
+     */
+    @Override
+    public T searchOne(Object id) throws Exception {
+        SearchRequest searchRequest = new SearchRequest().indices(index);
+        QueryBuilder queryBuilder = QueryBuilders.termQuery("id", id);
+        searchRequest.source(new SearchSourceBuilder().query(queryBuilder));
+        SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+        log.debug(JSON.toJSONString(searchResponse));
+        SearchHits searchHits = searchResponse.getHits();
+        if (searchHits.getTotalHits().value > 0) {
+            return parseSearchResponse(searchResponse).get(0);
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * 根据查询条件查询List
      * @param elasticSearchQueryWrapper
      * @return
      */
     @Override
-    public List<T> searchList(ElasticSearchQueryWrapper elasticSearchQueryWrapper) throws Exception {
+    public List<T> searchList(ElasticSearchQueryWrapper<T> elasticSearchQueryWrapper) throws Exception {
         SearchSourceBuilder searchSourceBuilder = elasticSearchQueryWrapper.getSearchSourceBuilder();
        // 组装查询条件
         searchSourceBuilder.size(maxSize);

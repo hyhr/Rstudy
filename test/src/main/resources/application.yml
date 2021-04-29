@@ -1,7 +1,9 @@
 elasticsearch:
   server:
     # es 默认最大条数
-    maxSize: 100
+    max-size: 100
+    max-conn-total: 100
+    max-conn-per-route: 100
     # es 节点信息
     hosts:
       - hostname: localhost

@@ -31,10 +31,10 @@ public class ElasticSearchQueryWrapper<T> extends AbstractWrapper<T, String, Ela
 
     /**
      * 构造高亮的字段 为空则不处理
-     * @param highlightField
+     * @param highlightField 高亮字段
      * @return
      */
-    public ElasticSearchQueryWrapper createHighlightField(String  highlightField) {
+    public ElasticSearchQueryWrapper<T> createHighlightField(String  highlightField) {
 
         if (org.springframework.util.StringUtils.hasLength(highlightField)) {
             HighlightBuilder highlightBuilder = new HighlightBuilder();
