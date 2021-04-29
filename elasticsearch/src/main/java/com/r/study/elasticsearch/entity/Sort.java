@@ -1,7 +1,5 @@
 package com.r.study.elasticsearch.entity;
 
-import org.elasticsearch.search.sort.SortOrder;
-
 /**
  * 排序 entity
  * date 2021-04-29 11:29
@@ -13,27 +11,27 @@ public class Sort {
     /**
      * 排序顺序
      */
-    private SortOrder order;
+    private String order;
 
     /**
      * 排序字段
      */
     private String field;
 
-    public SortOrder getOrder() {
+    public String getOrder() {
         return order;
     }
 
-    public void setOrder(SortOrder order) {
+    public void setOrder(String order) {
         this.order = order;
     }
 
     public Sort() {
     }
 
-    public Sort(SortOrder order, String field) {
-        this.order = order;
+    public Sort(String field, String order) {
         this.field = field;
+        this.order = order;
     }
 
     public String getField() {

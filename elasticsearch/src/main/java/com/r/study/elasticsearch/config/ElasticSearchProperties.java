@@ -15,6 +15,10 @@ import java.util.List;
 @ConfigurationProperties(prefix = "elasticsearch.server")
 public class ElasticSearchProperties {
 
+    private String userName;
+
+    private String password;
+
     /**
      * es 默认最大条数
      */
@@ -31,6 +35,22 @@ public class ElasticSearchProperties {
      * 节点
      */
     private List<EsHost> hosts;
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public List<EsHost> getHosts() {
         return hosts;

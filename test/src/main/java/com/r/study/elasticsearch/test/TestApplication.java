@@ -26,12 +26,12 @@ public class TestApplication {
 
             ElasticSearchQueryWrapper<Demo> queryWrapper = new ElasticSearchQueryWrapper<>();
             queryWrapper.select("id", "name")
-                        .orderBy(new Sort(SortOrder.DESC, "id"))
+                        .orderBy(new Sort("id", "desc"))
                         .match("name", "name");
 //                        .or(new ElasticSearchQueryWrapper<Demo>().or()
 //                                .gt("id", 309591447)
 //                                .lt("id", 100));
-            System.out.println(demoService.searchPage(queryWrapper, new EsPage<>(2, 10)).toString());
+            System.out.println(demoService.searchPage(queryWrapper, new EsPage<>(3 , 10)).toString());
             System.out.println(demoService.searchCount(new ElasticSearchQueryWrapper<>().match("id", "309882309")));
             System.out.println(demoService.searchOne(309591447));
         } catch (Exception e) {

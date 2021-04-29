@@ -8,6 +8,7 @@ import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -163,7 +164,7 @@ public class ElasticSearchQueryWrapper<T> extends AbstractWrapper<T, String, Ela
     public ElasticSearchQueryWrapper<T> orderBy(Sort... sorts) {
         Stream.of(sorts).forEach(sort -> {
             FieldSortBuilder fieldSortBuilder = new FieldSortBuilder(sort.getField());
-            fieldSortBuilder.order(sort.getOrder());
+            fieldSortBuilder.order(SortOrder.fromString(sort.getOrder()));
             sourceBuilder.sort(fieldSortBuilder);
         });
         return typedThis;

@@ -1,9 +1,15 @@
+logging:
+  level:
+    com.r: debug
+
 elasticsearch:
   server:
     # es 默认最大条数
     max-size: 100
     max-conn-total: 100
     max-conn-per-route: 100
+    user-name: root
+    password: root
     # es 节点信息
     hosts:
       - hostname: localhost
