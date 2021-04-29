@@ -21,6 +21,7 @@ import org.elasticsearch.client.core.CountResponse;
 import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.CreateIndexResponse;
 import org.elasticsearch.client.indices.GetIndexRequest;
+import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -110,10 +111,16 @@ public class ServiceImpl<T> implements IService<T> {
      * @return
      */
     @Override
-    public boolean createIndex() throws Exception {
+    public boolean createIndex(Integer shards, Integer replicas) throws Exception {
         Assert.isTrue(!indexExist(),index+ "Index is  exits!");
+        Assert.isTrue(replicas <= properties.getHosts().size(),"replicas size too large");
         CreateIndexRequest request = new CreateIndexRequest(index);
         request.alias(new Alias(alias));
+        Settings settings = Settings.builder()
+                .put("number_of_shards", shards)
+                .put("number_of_replicas", replicas)
+                .build();
+        request.settings(settings);
         CreateIndexResponse response = restHighLevelClient.indices().create(request, RequestOptions.DEFAULT);
         log.debug("index[{}] created", index);
         return response.isAcknowledged();

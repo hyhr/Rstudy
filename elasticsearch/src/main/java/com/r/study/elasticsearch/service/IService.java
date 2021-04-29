@@ -38,7 +38,17 @@ public interface IService<T> {
      * 创建索引
      * @return
      */
-    boolean createIndex() throws Exception;
+    default boolean createIndex() throws Exception {
+        return this.createIndex(1, 1);
+    }
+
+    /**
+     * 创建索引
+     * @param shards 主分片
+     * @param replicas 副分片
+     * @return
+     */
+    boolean createIndex(Integer shards, Integer replicas) throws Exception;
 
     /**
      * 删除索引
