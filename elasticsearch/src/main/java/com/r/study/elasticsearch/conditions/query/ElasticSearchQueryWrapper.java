@@ -4,15 +4,13 @@ import com.r.study.elasticsearch.conditions.AbstractWrapper;
 import com.r.study.elasticsearch.entity.Sort;
 import com.r.study.elasticsearch.enums.Operator;
 import com.r.study.elasticsearch.enums.SearchType;
+import org.elasticsearch.search.aggregations.AggregationBuilder;
+import org.elasticsearch.search.aggregations.PipelineAggregationBuilder;
 import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
-import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -102,16 +100,6 @@ public class ElasticSearchQueryWrapper<T> extends AbstractWrapper<T, String, Ela
     }
 
     @Override
-    public ElasticSearchQueryWrapper<T> in(String column, Collection<?> coll) {
-        return addCondition(column, coll, SearchType.IN);
-    }
-
-    @Override
-    public ElasticSearchQueryWrapper<T> notIn(String column, Collection<?> coll) {
-        return addCondition(column, coll, SearchType.NOT_IN);
-    }
-
-    @Override
     public ElasticSearchQueryWrapper<T> or() {
         this.operator = Operator.SHOULD;
         return typedThis;
@@ -156,11 +144,6 @@ public class ElasticSearchQueryWrapper<T> extends AbstractWrapper<T, String, Ela
 
 
     @Override
-    public ElasticSearchQueryWrapper<T> groupBy(String... columns) {
-        return null;
-    }
-
-    @Override
     public ElasticSearchQueryWrapper<T> orderBy(Sort... sorts) {
         Stream.of(sorts).forEach(sort -> {
             FieldSortBuilder fieldSortBuilder = new FieldSortBuilder(sort.getField());
@@ -171,8 +154,15 @@ public class ElasticSearchQueryWrapper<T> extends AbstractWrapper<T, String, Ela
     }
 
     @Override
-    public ElasticSearchQueryWrapper<T> having(String sqlHaving, Object... params) {
-        return null;
+    public ElasticSearchQueryWrapper<T> aggregation(AggregationBuilder... builders) {
+        Stream.of(builders).forEach(sourceBuilder::aggregation);
+        return typedThis;
+    }
+
+    @Override
+    public ElasticSearchQueryWrapper<T> aggregation(PipelineAggregationBuilder... builders) {
+        Stream.of(builders).forEach(sourceBuilder::aggregation);
+        return typedThis;
     }
 
     @Override
