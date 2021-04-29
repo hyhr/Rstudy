@@ -3,6 +3,7 @@ package com.r.study.elasticsearch.service;
 import com.alibaba.fastjson.JSON;
 import com.r.study.elasticsearch.conditions.query.ElasticSearchQueryWrapper;
 import com.r.study.elasticsearch.config.ElasticSearchProperties;
+import com.r.study.elasticsearch.entity.EsPage;
 import org.elasticsearch.action.admin.indices.alias.Alias;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.bulk.BulkRequest;
@@ -26,9 +27,6 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.elasticsearch.search.sort.ScoreSortBuilder;
-import org.elasticsearch.search.sort.SortBuilders;
-import org.elasticsearch.search.sort.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,6 +115,7 @@ public class ServiceImpl<T> implements IService<T> {
         CreateIndexRequest request = new CreateIndexRequest(index);
         request.alias(new Alias(alias));
         CreateIndexResponse response = restHighLevelClient.indices().create(request, RequestOptions.DEFAULT);
+        log.debug("index[{}] created", index);
         return response.isAcknowledged();
     }
 
@@ -129,6 +128,7 @@ public class ServiceImpl<T> implements IService<T> {
         checkIndex();
         DeleteIndexRequest request = new DeleteIndexRequest(index);
         AcknowledgedResponse delete = restHighLevelClient.indices().delete(request, RequestOptions.DEFAULT);
+        log.debug("index[{}] deleted", index);
         return delete.isAcknowledged();
     }
 
@@ -144,6 +144,7 @@ public class ServiceImpl<T> implements IService<T> {
         UpdateRequest update = new UpdateRequest(index, id);
         update.doc(JSON.toJSONString(source), XContentType.JSON);
         restHighLevelClient.update(update, RequestOptions.DEFAULT);
+        log.debug("index[{}] update:{}", index, source);
     }
 
     /**
@@ -168,25 +169,49 @@ public class ServiceImpl<T> implements IService<T> {
 
     /**
      * 根据查询条件查询List
-     * @param elasticSearchQueryWrapper
+     * @param wrapper
      * @return
      */
     @Override
-    public List<T> searchList(ElasticSearchQueryWrapper<T> elasticSearchQueryWrapper) throws Exception {
-        SearchSourceBuilder searchSourceBuilder = elasticSearchQueryWrapper.getSearchSourceBuilder();
+    public List<T> searchList(ElasticSearchQueryWrapper<T> wrapper) throws Exception {
+        SearchSourceBuilder searchSourceBuilder = wrapper.getSearchSourceBuilder();
        // 组装查询条件
         searchSourceBuilder.size(maxSize);
         SearchRequest searchRequest = new SearchRequest().indices(index);
         searchRequest.source(searchSourceBuilder);
-        System.out.println(searchRequest);
+        log.debug("searchList[{}] request:{}", index, wrapper);
         SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
-        log.debug(JSON.toJSONString(searchResponse));
+        log.debug("searchList[{}] response:{}", index, searchResponse);
         SearchHits searchHits = searchResponse.getHits();
         if (searchHits.getTotalHits().value > 0) {
             return parseSearchResponse(searchResponse);
         } else {
             return Collections.emptyList();
         }
+    }
+
+    /**
+     * 根据查询条件查询分页
+     * @return
+     */
+    @Override
+    public EsPage<T> searchPage(ElasticSearchQueryWrapper<T> wrapper, EsPage<T> page) throws Exception {
+        SearchSourceBuilder searchSourceBuilder = wrapper.getSearchSourceBuilder();
+       // 组装查询条件
+        searchSourceBuilder.size(page.getPageSize()).from((page.getPageIndex() - 1) * page.getPageSize());
+        SearchRequest searchRequest = new SearchRequest().indices(index);
+        searchRequest.source(searchSourceBuilder);
+        log.debug("searchPage[{}] request:{}", index, wrapper);
+        SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+        log.debug("searchPage[{}] response:{}", index, searchResponse);
+        SearchHits searchHits = searchResponse.getHits();
+        page.setTotals(Math.toIntExact(this.searchCount(wrapper)));
+        if (searchHits.getTotalHits().value > 0) {
+            page.setData(parseSearchResponse(searchResponse));
+        } else {
+            page.setData(Collections.emptyList());
+        }
+        return page;
     }
 
     /**
@@ -198,6 +223,7 @@ public class ServiceImpl<T> implements IService<T> {
     public Long searchCount(ElasticSearchQueryWrapper query) throws Exception {
         CountRequest request = new CountRequest().query(query.getSearchSourceBuilder().query());
         CountResponse response = restHighLevelClient.count(request,RequestOptions.DEFAULT);
+        log.debug("searchCount[{}] count:{}", index, response.getCount());
         return response.getCount();
     }
 
@@ -216,17 +242,12 @@ public class ServiceImpl<T> implements IService<T> {
             bulkRequest.add(deleteRequest);
         }
         BulkResponse delete = restHighLevelClient.bulk(bulkRequest, RequestOptions.DEFAULT);
-        log.info("删除成功返回状态为 {}",delete.status().getStatus());
+        log.debug("删除成功返回状态为 {}",delete.status().getStatus());
         return true;
     }
 
     protected void checkIndex() throws IOException {
         Assert.isTrue(indexExist(),"索引不存在:"+ index);
-    }
-
-    protected void addScoreSort(SearchSourceBuilder sourceBuilder) {
-        ScoreSortBuilder scoreSort = SortBuilders.scoreSort().order(SortOrder.DESC);
-        sourceBuilder.sort(scoreSort);
     }
 
     protected List<T> parseSearchResponse(SearchResponse searchResponse) throws InstantiationException, IllegalAccessException {

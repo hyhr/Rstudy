@@ -1,6 +1,7 @@
 package com.r.study.elasticsearch.service;
 
 import com.r.study.elasticsearch.conditions.query.ElasticSearchQueryWrapper;
+import com.r.study.elasticsearch.entity.EsPage;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 
@@ -65,6 +66,12 @@ public interface IService<T> {
      * @return
      */
     List<T> searchList(ElasticSearchQueryWrapper<T> condition) throws Exception;
+
+    /**
+     * 根据查询条件查询分页
+     * @return
+     */
+    EsPage<T> searchPage(ElasticSearchQueryWrapper<T> condition, EsPage<T> page) throws Exception;
 
     /**
      * 根据查询条件查询总数

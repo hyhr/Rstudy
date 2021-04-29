@@ -82,8 +82,4 @@ public class AbstractElasticSearchService<T> extends ServiceImpl<T> {
         request.storedFields("_none_");
         return restHighLevelClient.exists(request, RequestOptions.DEFAULT);
     }
-
-    private QueryBuilder buildeRequest(ElasticSearchQueryWrapper query) {
-        return null;
-    }
 }

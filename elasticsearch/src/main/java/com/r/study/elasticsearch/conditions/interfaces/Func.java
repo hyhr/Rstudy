@@ -1,5 +1,7 @@
 package com.r.study.elasticsearch.conditions.interfaces;
 
+import com.r.study.elasticsearch.entity.Sort;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
@@ -80,14 +82,11 @@ public interface Func<Children, R> extends Serializable {
     Children groupBy(R... columns);
 
     /**
-     * 排序：ORDER BY 字段, ...
-     * <p>例: orderBy(true, "id", "name")</p>
-     *
-     * @param isAsc     是否是 ASC 排序
-     * @param columns   字段数组
+     * 排序：ORDER BY
+     * @param sorts   排序字段
      * @return children
      */
-    Children orderBy(boolean isAsc, R... columns);
+    Children orderBy(Sort... sorts);
 
     /**
      * HAVING ( sql语句 )

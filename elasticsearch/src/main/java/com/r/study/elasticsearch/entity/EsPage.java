@@ -14,12 +14,12 @@ public class EsPage<T> implements Serializable {
     /**
      * 页码
      */
-    private Integer pageIndex;
+    private Integer pageIndex = 1;
 
     /**
      * 分页大小
      */
-    private Integer pageSize;
+    private Integer pageSize = 20;
 
     /**
      * 总条数
@@ -32,6 +32,14 @@ public class EsPage<T> implements Serializable {
     private Integer totalPage;
 
     private List<T> data;
+
+    public EsPage() {
+    }
+
+    public EsPage(int pageIndex, int pageSize) {
+        this.pageIndex = pageIndex;
+        this.pageSize = pageSize;
+    }
 
     public Integer getPageIndex() {
         return pageIndex;
@@ -74,5 +82,16 @@ public class EsPage<T> implements Serializable {
 
     public void setData(List<T> data) {
         this.data = data;
+    }
+
+    @Override
+    public String toString() {
+        return "EsPage{" +
+                "pageIndex=" + pageIndex +
+                ", pageSize=" + pageSize +
+                ", totals=" + totals +
+                ", totalPage=" + totalPage +
+                ", data=" + data +
+                '}';
     }
 }

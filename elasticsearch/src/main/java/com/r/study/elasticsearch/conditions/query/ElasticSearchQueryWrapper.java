@@ -1,13 +1,19 @@
 package com.r.study.elasticsearch.conditions.query;
 
 import com.r.study.elasticsearch.conditions.AbstractWrapper;
+import com.r.study.elasticsearch.entity.Sort;
 import com.r.study.elasticsearch.enums.Operator;
 import com.r.study.elasticsearch.enums.SearchType;
 import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.SortBuilder;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /**
  * elasticSearch criteria builder
@@ -154,8 +160,13 @@ public class ElasticSearchQueryWrapper<T> extends AbstractWrapper<T, String, Ela
     }
 
     @Override
-    public ElasticSearchQueryWrapper<T> orderBy(boolean isAsc, String... columns) {
-        return null;
+    public ElasticSearchQueryWrapper<T> orderBy(Sort... sorts) {
+        Stream.of(sorts).forEach(sort -> {
+            FieldSortBuilder fieldSortBuilder = new FieldSortBuilder(sort.getField());
+            fieldSortBuilder.order(sort.getOrder());
+            sourceBuilder.sort(fieldSortBuilder);
+        });
+        return typedThis;
     }
 
     @Override
@@ -166,5 +177,13 @@ public class ElasticSearchQueryWrapper<T> extends AbstractWrapper<T, String, Ela
     @Override
     public ElasticSearchQueryWrapper<T> func(Consumer<ElasticSearchQueryWrapper<T>> consumer) {
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return "ElasticSearchQueryWrapper{" +
+                "sourceBuilder=" + sourceBuilder +
+                ", boolQuery=" + boolQuery +
+                '}';
     }
 }
