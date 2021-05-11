@@ -11,5 +11,6 @@
     <modules>
         <module>elasticsearch</module>
         <module>test</module>
+        <module>monkey-api-sign-core</module>
     </modules>
 </project>
