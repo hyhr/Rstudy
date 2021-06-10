@@ -1,17 +1,16 @@
 package com.r.study.monkey.sign.springboot.autoconfigure;
 
-import com.r.study.monkey.sign.springboot.endpoint.SignEndpoint;
+import com.r.study.monkey.sign.algorithm.SignAlgorithm;
 import com.r.study.monkey.sign.core.SignConfig;
 import com.r.study.monkey.sign.core.SignFilter;
+import com.r.study.monkey.sign.springboot.endpoint.SignEndpoint;
+import com.r.study.monkey.sign.springboot.init.ApiSignDataInit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import com.r.study.monkey.sign.algorithm.SignAlgorithm;
-import com.r.study.monkey.sign.springboot.init.ApiSignDataInit;
 
 
 /**

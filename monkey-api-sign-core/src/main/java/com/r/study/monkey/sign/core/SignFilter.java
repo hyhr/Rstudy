@@ -20,6 +20,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.r.study.monkey.sign.exception.SignException;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,9 +35,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
  *
  * @author yinjihuan
  */
+@Slf4j
 public class SignFilter implements Filter {
-
-    private Logger logger = LoggerFactory.getLogger(SignFilter.class);
 
     private SignConfig signConfig;
 
@@ -76,7 +76,7 @@ public class SignFilter implements Filter {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse resp = (HttpServletResponse) response;
         String uri = req.getRequestURI();
-        logger.debug("RequestURI: {}", uri);
+        log.debug("RequestURI: {}", uri);
 
         // 调试模式不签名
         if (signConfig.isDebug()) {
@@ -152,7 +152,7 @@ public class SignFilter implements Filter {
     private void processCheckSign(SignReqestWrapper requestWrapper, HttpServletRequest req) {
         String requestData = requestWrapper.getRequestData();
         String uri = req.getRequestURI();
-        logger.debug("RequestData: {}", requestData);
+        log.debug("RequestData: {}", requestData);
         try {
             Map<String, Object> requestParamMap = null;
             if (!StringUtils.isEmpty(requestData)) {
@@ -162,7 +162,7 @@ public class SignFilter implements Filter {
             if (!StringUtils.endsWithIgnoreCase(req.getMethod(), RequestMethod.GET.name())) {
                 if (requestParamMap != null && requestParamMap.size() > 0) {
                     boolean checkSignRequestData = signAlgorithm.checkSign(requestParamMap, signConfig.getKey());
-                    logger.debug("checkSignRequestData: {}", checkSignRequestData);
+                    log.debug("checkSignRequestData: {}", checkSignRequestData);
                     String sign = (String) requestParamMap.get("sign");
                     if (StringUtils.isEmpty(sign)) {
                         //缺少必要的sign字段
@@ -188,7 +188,7 @@ public class SignFilter implements Filter {
             }
             if (paramMap.size() > 0) {
                 boolean checkSignParamValue = signAlgorithm.checkSign(paramMap, signConfig.getKey());
-                logger.debug("checkSignRequestData: {}", checkSignParamValue);
+                log.debug("checkSignRequestData: {}", checkSignParamValue);
                 String sign = (String) paramMap.get("sign");
                 if (StringUtils.isEmpty(sign)) {
                     //缺少必要的sign字段
@@ -200,7 +200,7 @@ public class SignFilter implements Filter {
                 }
             }
         } catch (Exception e) {
-            logger.error("请求数据验签失败", e);
+            log.error("请求数据验签失败", e);
             throw new RuntimeException(e);
         }
     }
@@ -213,7 +213,7 @@ public class SignFilter implements Filter {
      * @throws IOException
      */
     private void writeSignContent(String responseData, ServletResponse response) throws IOException {
-        logger.debug("ResponseData: {}", responseData);
+        log.debug("ResponseData: {}", responseData);
         ServletOutputStream out = null;
         try {
             Map<String, Object> responseDataMap = null;
@@ -225,7 +225,7 @@ public class SignFilter implements Filter {
                 String sign = signAlgorithm.sign(responseDataMap, signConfig.getKey());
                 responseDataMap.put("sign", sign);
                 responseData = JSON.toJSONString(responseDataMap, SerializerFeature.WriteMapNullValue);
-                logger.debug("signResponseData: {}", responseData);
+                log.debug("signResponseData: {}", responseData);
                 //TODO 长度不对，先注释了
 //                response.setContentLength(responseData.length());
                 response.setCharacterEncoding(signConfig.getResponseCharset());
@@ -233,7 +233,7 @@ public class SignFilter implements Filter {
                 out.write(responseData.getBytes(signConfig.getResponseCharset()));
             }
         } catch (Exception e) {
-            logger.error("响应数据签名失败", e);
+            log.error("响应数据签名失败", e);
             throw new RuntimeException(e);
         } finally {
             if (out != null) {
@@ -248,7 +248,7 @@ public class SignFilter implements Filter {
             return true;
         }
         String prefixUri = methodType.toLowerCase() + ":" + uri;
-        logger.debug("contains uri: {}", prefixUri);
+        log.debug("contains uri: {}", prefixUri);
         if (list.contains(prefixUri)) {
             return true;
         }

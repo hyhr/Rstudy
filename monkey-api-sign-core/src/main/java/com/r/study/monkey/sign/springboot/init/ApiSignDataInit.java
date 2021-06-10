@@ -3,9 +3,10 @@ package com.r.study.monkey.sign.springboot.init;
 import java.lang.reflect.Method;
 import java.util.*;
 
-import com.r.study.monkey.sign.springboot.annotation.Sign;
 import com.r.study.monkey.sign.springboot.HttpMethodTypePrefixConstant;
+import com.r.study.monkey.sign.springboot.annotation.Sign;
 import com.r.study.monkey.sign.springboot.annotation.SignIgnore;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -27,9 +28,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.r.study.monkey.sign.springboot.annotation.CheckSign;
 import com.r.study.monkey.sign.springboot.annotation.CheckSignIgnore;
 
+@Slf4j
 public class ApiSignDataInit implements ApplicationContextAware {
-
-	private Logger logger = LoggerFactory.getLogger(ApiSignDataInit.class);
 
 	/**
 	 * 需要对响应内容进行签名的接口URI<br>
@@ -110,7 +110,7 @@ public class ApiSignDataInit implements ApplicationContextAware {
                     	if (!StringUtils.hasText(uri)) {
                     		uri = getApiUri(clz, method);
 						}
-                        logger.debug("sign URI: {}", uri);
+                        log.debug("sign URI: {}", uri);
                         responseSignUriList.add(uri);
                 	}
                 	CheckSign checkSign = AnnotationUtils.findAnnotation(method, CheckSign.class);
@@ -125,7 +125,7 @@ public class ApiSignDataInit implements ApplicationContextAware {
 							requestCheckSignParamMap.put(uri, Arrays.asList(checkSignParam.split(",")));
 						}
 
-                        logger.debug("check sign URI: {}", uri);
+                        log.debug("check sign URI: {}", uri);
                         requestCheckSignUriList.add(uri);
                     }
                     SignIgnore signIgnore = AnnotationUtils.findAnnotation(method, SignIgnore.class);
@@ -135,7 +135,7 @@ public class ApiSignDataInit implements ApplicationContextAware {
                     	if (!StringUtils.hasText(uri)) {
                     		uri = getApiUri(clz, method);
 						}
-                        logger.debug("SignIgnore URI: {}", uri);
+                        log.debug("SignIgnore URI: {}", uri);
                         responseSignUriIgnoreList.add(uri);
                 	}
                 	CheckSignIgnore checkSignIgnore = AnnotationUtils.findAnnotation(method, CheckSignIgnore.class);
@@ -144,7 +144,7 @@ public class ApiSignDataInit implements ApplicationContextAware {
                     	if (!StringUtils.hasText(uri)) {
                     		uri = getApiUri(clz, method);
 						}
-                        logger.debug("CheckSignIgnore URI: {}", uri);
+                        log.debug("CheckSignIgnore URI: {}", uri);
                         requestCheckSignUriIgnoreList.add(uri);
                     }
                 }

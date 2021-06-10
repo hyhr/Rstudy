@@ -1,6 +1,6 @@
 package com.r.study.elasticsearch.test.demo;
 
-import com.r.study.elasticsearch.annotation.Alias;
+import com.r.study.elasticsearch.conditions.annotation.Alias;
 
 /**
  * date 2021-04-27 11:19

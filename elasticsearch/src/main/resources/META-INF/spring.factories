@@ -1,1 +1,1 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.r.study.elasticsearch.config.ElasticSearchAutoConfig
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.r.study.elasticsearch.conditions.config.ElasticSearchAutoConfig

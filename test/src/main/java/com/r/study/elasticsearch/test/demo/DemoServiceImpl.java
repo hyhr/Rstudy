@@ -1,6 +1,6 @@
 package com.r.study.elasticsearch.test.demo;
 
-import com.r.study.elasticsearch.service.AbstractElasticSearchService;
+import com.r.study.elasticsearch.conditions.service.AbstractElasticSearchService;
 import org.springframework.stereotype.Service;
 
 /**
