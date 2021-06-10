@@ -1,9 +1,9 @@
 package com.r.study.tcp.gateway.test.server;
 
 import com.google.protobuf.ByteString;
-import com.r.study.tcp.gateway.tcp.connector.tcp.codec.MessageBuf;
-import com.r.study.tcp.gateway.tcp.constant.Constants;
-import com.r.study.tcp.gateway.tcp.message.MessageWrapper;
+import com.r.study.tcp.gateway.server.codec.MessageBuf;
+import com.r.study.tcp.gateway.constant.Constants;
+import com.r.study.tcp.gateway.message.MessageWrapper;
 import com.r.study.tcp.gateway.tcp.notify.NotifyProxy;
 
 import java.util.Map;

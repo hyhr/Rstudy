@@ -2,10 +2,10 @@ package com.r.study.tcp.gateway.test.server;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import com.r.study.tcp.gateway.tcp.connector.tcp.codec.MessageBuf;
+import com.r.study.tcp.gateway.server.codec.MessageBuf;
 import com.r.study.tcp.gateway.tcp.invoke.ApiProxy;
-import com.r.study.tcp.gateway.tcp.message.MessageWrapper;
-import com.r.study.tcp.gateway.tcp.message.SystemMessage;
+import com.r.study.tcp.gateway.message.MessageWrapper;
+import com.r.study.tcp.gateway.message.SystemMessage;
 import com.r.study.tcp.gateway.test.data.Login;
 import com.r.study.tcp.gateway.test.data.Protocol;
 import org.springframework.stereotype.Component;

@@ -1,10 +1,10 @@
 package com.r.study.tcp.gateway.tcp.notify;
 
-import com.r.study.tcp.gateway.tcp.connector.tcp.TcpConnector;
-import com.r.study.tcp.gateway.tcp.connector.tcp.codec.MessageBuf;
-import com.r.study.tcp.gateway.tcp.constant.Constants;
-import com.r.study.tcp.gateway.tcp.message.MessageWrapper;
-import com.r.study.tcp.gateway.tcp.utils.ByteUtils;
+import com.r.study.tcp.gateway.connector.TcpConnector;
+import com.r.study.tcp.gateway.server.codec.MessageBuf;
+import com.r.study.tcp.gateway.constant.Constants;
+import com.r.study.tcp.gateway.message.MessageWrapper;
+import com.r.study.tcp.gateway.utils.ByteUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;

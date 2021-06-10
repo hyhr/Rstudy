@@ -1,6 +1,6 @@
 package com.r.study.tcp.gateway.test.data;
 
-import com.r.study.tcp.gateway.tcp.connector.tcp.codec.MessageBuf;
+import com.r.study.tcp.gateway.server.codec.MessageBuf;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
 import java.util.Date;

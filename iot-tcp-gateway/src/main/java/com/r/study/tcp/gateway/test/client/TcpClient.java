@@ -1,6 +1,6 @@
 package com.r.study.tcp.gateway.test.client;
 
-import com.r.study.tcp.gateway.tcp.connector.tcp.codec.MessageBuf;
+import com.r.study.tcp.gateway.server.codec.MessageBuf;
 import com.r.study.tcp.gateway.test.data.Protocol;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
@@ -13,7 +13,7 @@ import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 
 public class TcpClient {
 
-    public static String host = "iot-open.icloud.com";
+    public static String host = "localhost";
     public static int port = 2000;
 
     public static Bootstrap bootstrap = getBootstrap();

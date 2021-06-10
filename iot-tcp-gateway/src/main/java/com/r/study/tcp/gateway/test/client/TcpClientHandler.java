@@ -1,6 +1,6 @@
 package com.r.study.tcp.gateway.test.client;
 
-import com.r.study.tcp.gateway.tcp.connector.tcp.codec.MessageBuf;
+import com.r.study.tcp.gateway.server.codec.MessageBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
@@ -8,7 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TcpClientHandler extends ChannelInboundHandlerAdapter {
 
-    public void channelRead(ChannelHandlerContext ctx, Object o) throws Exception {
+    @Override
+    public void channelRead(ChannelHandlerContext ctx, Object o) {
         MessageBuf.JMTransfer message = (MessageBuf.JMTransfer) o;
 
         log.info("Client Received Msg :" + message);
