@@ -1,15 +1,11 @@
 package com.r.study.tcp.gateway.connector;
 
-import com.r.study.tcp.gateway.listener.TcpHeartbeatListener;
-import com.r.study.tcp.gateway.session.Session;
 import com.r.study.tcp.gateway.message.MessageWrapper;
-
+import com.r.study.tcp.gateway.session.Session;
 import io.netty.channel.ChannelHandlerContext;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 /**
@@ -20,22 +16,13 @@ import javax.annotation.PreDestroy;
 @Component
 public class TcpConnector extends ExchangeTcpConnector {
 
-    private TcpHeartbeatListener tcpHeartbeatListener = null;
 
-    @PostConstruct
     @Override
-    public void init() {
-        //心跳检测
-        tcpHeartbeatListener = new TcpHeartbeatListener(tcpSessionManager);
-        Thread heartbeatThread = new Thread(tcpHeartbeatListener, "tcpHeartbeatListener");
-        heartbeatThread.setDaemon(true);
-        heartbeatThread.start();
-    }
+    public void init() { }
 
     @PreDestroy
     @Override
     public void destroy() {
-        tcpHeartbeatListener.stop();
         for (Session session : tcpSessionManager.getSessions()) {
             session.close();
         }
@@ -46,7 +33,6 @@ public class TcpConnector extends ExchangeTcpConnector {
     public void connect(ChannelHandlerContext ctx, MessageWrapper wrapper) {
         try {
             Session session = tcpSessionManager.createSession(wrapper.getSessionId(), ctx);
-            session.addSessionListener(tcpHeartbeatListener);
             session.connect();
 
             tcpSessionManager.addSession(session);

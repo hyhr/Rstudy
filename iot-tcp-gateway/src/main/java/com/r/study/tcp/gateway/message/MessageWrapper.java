@@ -21,6 +21,8 @@ public class MessageWrapper implements Serializable {
      */
     private Object body;
 
+    private Long seq;
+
     private MessageWrapper() {
     }
 
@@ -54,6 +56,10 @@ public class MessageWrapper implements Serializable {
         return MessageProtocol.NOTIFY.equals(this.protocol);
     }
 
+    public boolean isReceive() {
+        return MessageProtocol.RECEIVE.equals(this.protocol);
+    }
+
     public boolean isReply() {
         return MessageProtocol.REPLY.equals(this.protocol);
     }
@@ -80,6 +86,14 @@ public class MessageWrapper implements Serializable {
 
     public void setBody(Object body) {
         this.body = body;
+    }
+
+    public Long getSeq() {
+        return seq;
+    }
+
+    public void setSeq(Long seq) {
+        this.seq = seq;
     }
 
 }

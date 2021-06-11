@@ -1,15 +1,12 @@
 package com.r.study.tcp.gateway.session;
 
-import com.r.study.tcp.gateway.connector.TcpConnection;
-import com.r.study.tcp.gateway.listener.SessionListener;
 import com.r.study.tcp.gateway.connector.Connection;
-
+import com.r.study.tcp.gateway.connector.TcpConnection;
+import com.r.study.tcp.gateway.listener.event.SessionCreateEvent;
+import com.r.study.tcp.gateway.utils.SpringUtil;
 import io.netty.channel.ChannelHandlerContext;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 /**
  * Tcp Session manager
@@ -18,11 +15,7 @@ import java.util.List;
  */
 @Slf4j
 @Component
-public class TcpSessionManager extends ExchangeTcpSessionManager {
-
-    public TcpSessionManager(List<SessionListener> sessionListeners) {
-        super(sessionListeners);
-    }
+public class TcpSessionManager extends ExchangeSessionManager {
 
     @Override
     public synchronized Session createSession(String sessionId, ChannelHandlerContext ctx) {
@@ -47,14 +40,11 @@ public class TcpSessionManager extends ExchangeTcpSessionManager {
         session.setMaxInactiveInterval(this.getMaxInactiveInterval());
         session.setCreationTime(System.currentTimeMillis());
         session.setLastAccessedTime(System.currentTimeMillis());
-        session.setSessionManager(this);
         session.setConnection(createTcpConnection(session, ctx));
         log.info("create new session " + sessionId + " successful!");
 
-        for (SessionListener listener : sessionListeners) {
-            session.addSessionListener(listener);
-        }
-        log.debug("add listeners to session " + sessionId + " successful! " + sessionListeners);
+        SpringUtil.publishEvent(new SessionCreateEvent(session));
+        log.debug("add listeners to session " + sessionId + " successful! ");
 
         return session;
     }

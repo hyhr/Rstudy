@@ -1,6 +1,5 @@
 package com.r.study.tcp.gateway.connector;
 
-import com.r.study.tcp.gateway.connector.Connection;
 import com.r.study.tcp.gateway.session.Session;
 
 /**

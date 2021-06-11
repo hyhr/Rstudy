@@ -1,5 +1,6 @@
 package com.r.study.tcp.gateway.server;
 
+import com.r.study.tcp.gateway.config.GatewayConfig;
 import com.r.study.tcp.gateway.exception.InitErrorException;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -27,7 +28,8 @@ public class TcpServer {
     @Autowired
     private ServerTransportConfig serverConfig;
 
-    private int port = 2000;
+    @Autowired
+    private GatewayConfig config;
 
     private static final int BIZ_GROUP_SIZE = Runtime.getRuntime().availableProcessors() * 2;
     private static final int BIZ_THREAD_SIZE = 4;
@@ -39,6 +41,7 @@ public class TcpServer {
     public void init() throws Exception {
         log.info("start tcp server ...");
 
+        final int port = config.getPort();
         // Server 服务启动
         ServerBootstrap bootstrap = new ServerBootstrap();
         bootstrap.group(bossGroup, workerGroup);
@@ -50,15 +53,12 @@ public class TcpServer {
         // 绑定接口，同步等待成功
         log.info("start tcp server at port[" + port + "].");
         ChannelFuture future = bootstrap.bind(port).sync();
-        future.addListener(new ChannelFutureListener() {
-            @Override
-            public void operationComplete(ChannelFuture future) {
-                if (future.isSuccess()) {
-                    log.info("Server have success bind to " + port);
-                } else {
-                    log.error("Server fail bind to " + port);
-                    throw new InitErrorException("Server start fail !", future.cause());
-                }
+        future.addListener((ChannelFutureListener) channelFuture -> {
+            if (channelFuture.isSuccess()) {
+                log.info("Server have success bind to " + port);
+            } else {
+                log.error("Server fail bind to " + port);
+                throw new InitErrorException("Server start fail !", channelFuture.cause());
             }
         });
     }
@@ -70,16 +70,5 @@ public class TcpServer {
         bossGroup.shutdownGracefully();
         workerGroup.shutdownGracefully();
         log.info("shutdown tcp server end.");
-    }
-
-    //------------------ set && get --------------------
-
-
-    public void setServerConfig(ServerTransportConfig serverConfig) {
-        this.serverConfig = serverConfig;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
     }
 }

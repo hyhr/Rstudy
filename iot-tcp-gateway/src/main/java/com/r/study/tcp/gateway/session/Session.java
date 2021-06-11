@@ -1,13 +1,13 @@
 package com.r.study.tcp.gateway.session;
 
-import com.r.study.tcp.gateway.session.Endpoint;
+import com.r.study.tcp.gateway.connector.Connection;
 
 /**
  * session上下文
  * @FileName Session.java
  * @author YiHui.He
  */
-public interface Session extends Endpoint {
+public interface Session extends Node {
 
     /**
      * 当有请求进来时，更新accessTime
@@ -35,4 +35,17 @@ public interface Session extends Endpoint {
      */
     boolean expire();
 
+    /**
+     * @param connection
+     */
+    void setConnection(Connection connection);
+
+    Connection getConnection();
+
+    /**
+     * @param sessionId
+     */
+    void setSessionId(String sessionId);
+
+    String getSessionId();
 }

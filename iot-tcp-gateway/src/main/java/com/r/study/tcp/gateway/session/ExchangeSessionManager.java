@@ -1,11 +1,8 @@
 package com.r.study.tcp.gateway.session;
 
-import com.r.study.tcp.gateway.session.Session;
-import com.r.study.tcp.gateway.session.SessionManager;
-import com.r.study.tcp.gateway.listener.SessionListener;
+import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,17 +13,12 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public abstract class ExchangeSessionManager implements SessionManager {
 
+    /**
+     * define timeout 5min
+     */
+    private int maxInactiveInterval = 5 * 60;
+
     public ExchangeSessionManager() {}
-
-    public ExchangeSessionManager(List<SessionListener> sessionListeners) {
-        this.sessionListeners = sessionListeners;
-    }
-
-    protected List<SessionListener> sessionListeners = null;
-
-    public void setSessionListeners(List<SessionListener> sessionListeners) {
-        this.sessionListeners = sessionListeners;
-    }
 
     /**
      * The set of currently active Sessions for this Manager, keyed by session
@@ -89,11 +81,6 @@ public abstract class ExchangeSessionManager implements SessionManager {
         return sessions.size();
     }
 
-    /**
-     * define timeout 5min
-     */
-    private int maxInactiveInterval = 5 * 60;
-
     @Override
     public int getMaxInactiveInterval() {
         return maxInactiveInterval;
@@ -104,4 +91,11 @@ public abstract class ExchangeSessionManager implements SessionManager {
         this.maxInactiveInterval = maxInactiveInterval;
     }
 
+    /**
+     * 根据sessionId和上下文创建session
+     * @param sessionId sessionId
+     * @param ctx 上下文
+     * @return
+     */
+    public abstract Session createSession(String sessionId, ChannelHandlerContext ctx);
 }

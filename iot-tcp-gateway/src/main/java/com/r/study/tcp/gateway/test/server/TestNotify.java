@@ -1,7 +1,7 @@
 package com.r.study.tcp.gateway.test.server;
 
 import com.google.protobuf.ByteString;
-import com.r.study.tcp.gateway.server.codec.MessageBuf;
+import com.r.study.tcp.gateway.api.codec.protobuf.MessageBuf;
 import com.r.study.tcp.gateway.constant.Constants;
 import com.r.study.tcp.gateway.message.MessageWrapper;
 import com.r.study.tcp.gateway.tcp.notify.NotifyProxy;

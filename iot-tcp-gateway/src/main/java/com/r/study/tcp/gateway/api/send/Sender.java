@@ -1,4 +1,4 @@
-package com.r.study.tcp.gateway.tcp.send;
+package com.r.study.tcp.gateway.api.send;
 
 import com.r.study.tcp.gateway.message.MessageWrapper;
 

@@ -1,7 +1,10 @@
 package com.r.study.tcp.gateway.listener;
 
-import com.r.study.tcp.gateway.listener.event.SessionEvent;
+import com.r.study.tcp.gateway.listener.event.SessionCreateEvent;
+import com.r.study.tcp.gateway.listener.event.SessionDestroyEvent;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 /**
@@ -9,16 +12,18 @@ import org.springframework.stereotype.Component;
  * @author YiHui.He
  */
 @Slf4j
-@Component
-public class LogSessionListener implements SessionListener {
+public class LogSessionListener {
 
-    @Override
-    public void sessionCreated(SessionEvent se) {
-        log.info("session " + se.getSession().getSessionId() + " have been created!");
+
+    @Async
+    @EventListener(SessionCreateEvent.class)
+    public void sessionCreated(SessionCreateEvent event) {
+        log.info("session " + event.getSession().getSessionId() + " have been created!");
     }
 
-    @Override
-    public void sessionDestroyed(SessionEvent se) {
-        log.info("session " + se.getSession().getSessionId() + " have been destroyed!");
+    @Async
+    @EventListener(SessionDestroyEvent.class)
+    public void sessionDestroyed(SessionDestroyEvent event) {
+        log.info("session " + event.getSession().getSessionId() + " have been destroyed!");
     }
 }

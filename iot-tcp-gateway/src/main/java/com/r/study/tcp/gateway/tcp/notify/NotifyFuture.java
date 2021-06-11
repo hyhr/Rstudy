@@ -23,6 +23,7 @@ public class NotifyFuture<V> implements java.util.concurrent.Future<V> {
         this.timeout = timeout;
     }
 
+    @Override
     public boolean cancel(boolean mayInterruptIfRunning) {
         Object result = this.result;
         if (isDone0(result)) {
@@ -41,10 +42,12 @@ public class NotifyFuture<V> implements java.util.concurrent.Future<V> {
         return true;
     }
 
+    @Override
     public boolean isCancelled() {
         return false;
     }
 
+    @Override
     public boolean isDone() {
         return isDone0(result);
     }

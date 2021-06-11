@@ -14,7 +14,7 @@
     
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <org.springframework.version>5.3.5</org.springframework.version>
+        <springboot.version>2.2.9.RELEASE</springboot.version>
         <netty.version>4.1.60.Final</netty.version>
         <protobuf.version>3.13.0</protobuf.version>
         <lombok.version>1.18.20</lombok.version>
@@ -26,8 +26,14 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
-            <version>2.1.13.RELEASE</version>
+            <version>${springboot.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+            <version>${springboot.version}</version>
+        </dependency>
+        
         <!-- netty -->
         <dependency>
             <groupId>io.netty</groupId>
@@ -58,8 +64,6 @@
             <version>3.11</version>
             <scope>compile</scope>
         </dependency>
-    
-    
     </dependencies>
     
     <build>
@@ -75,23 +79,11 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>8</source>
+                    <target>8</target>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>2.2.1</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+           
         </plugins>
     </build>
 </project>

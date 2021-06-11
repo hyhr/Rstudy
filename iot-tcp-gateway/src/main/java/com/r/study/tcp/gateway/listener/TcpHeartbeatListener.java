@@ -1,9 +1,15 @@
 package com.r.study.tcp.gateway.listener;
 
-import com.r.study.tcp.gateway.listener.event.SessionEvent;
+import com.r.study.tcp.gateway.listener.event.SessionCreateEvent;
 import com.r.study.tcp.gateway.session.Session;
 import com.r.study.tcp.gateway.session.TcpSessionManager;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
@@ -14,23 +20,26 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author YiHui.He
  */
 @Slf4j
-public class TcpHeartbeatListener implements Runnable, SessionListener {
+@Component
+public class TcpHeartbeatListener implements ApplicationRunner {
 
-    private TcpSessionManager tcpSessionManager = null;
+    @Autowired
+    private TcpSessionManager tcpSessionManager;
+
+    @Async
+    @EventListener(SessionCreateEvent.class)
+    public void sessionCreated(SessionCreateEvent event) {
+        signalQueue();
+    }
 
     private final ReentrantLock lock = new ReentrantLock();
     private final Condition notEmpty = lock.newCondition();
 
     private final int checkPeriod = 30 * 1000;
-    private volatile boolean stop = false;
-
-    public TcpHeartbeatListener(TcpSessionManager tcpSessionManager) {
-        this.tcpSessionManager = tcpSessionManager;
-    }
 
     @Override
-    public void run() {
-        while (!stop) {
+    public void run(ApplicationArguments args) {
+        while (true) {
             if (isSessionEmpty()) {
                 //如果session数为0，暂停到有session创建事件监听到
                 awaitQueue();
@@ -41,10 +50,6 @@ public class TcpHeartbeatListener implements Runnable, SessionListener {
                 Thread.sleep(checkPeriod);
             } catch (InterruptedException e) {
                 log.error("TcpHeartbeatListener run occur InterruptedException!", e);
-            }
-            // is stop
-            if (stop) {
-                break;
             }
             // 检测在线用户，多久没有发送心跳，超过规定时间的删除掉
             checkHeartBeat();
@@ -73,7 +78,7 @@ public class TcpHeartbeatListener implements Runnable, SessionListener {
             } catch (InterruptedException e) {
                 log.error("TcpHeartbeatListener awaitQueue occur InterruptedException!", e);
             } catch (Exception e) {
-                log.error("await Thread Queue error!", e);
+                log.error("await Queue error!", e);
             } finally {
                 lock.unlock();
             }
@@ -90,25 +95,11 @@ public class TcpHeartbeatListener implements Runnable, SessionListener {
         } catch (InterruptedException e) {
             log.error("TcpHeartbeatListener signalQueue occur InterruptedException!", e);
         } catch (Exception e) {
-            log.error("signal Thread Queue error!", e);
+            log.error("signal Queue error!", e);
         } finally {
             if (flag) {
                 lock.unlock();
             }
         }
     }
-
-    public void stop() {
-        this.stop = true;
-    }
-
-    @Override
-    public void sessionCreated(SessionEvent se) {
-        signalQueue();
-    }
-
-    @Override
-    public void sessionDestroyed(SessionEvent se) {
-    }
-
 }

@@ -1,9 +1,13 @@
 package com.r.study.tcp.gateway.test.client;
 
-import com.r.study.tcp.gateway.server.codec.MessageBuf;
+import com.r.study.tcp.gateway.api.codec.protobuf.MessageBuf;
 import com.r.study.tcp.gateway.test.data.Protocol;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.protobuf.ProtobufDecoder;

@@ -2,14 +2,15 @@ package com.r.study.tcp.gateway.listener.event;
 
 
 import com.r.study.tcp.gateway.session.Session;
+import org.springframework.context.ApplicationEvent;
 
 import java.util.EventObject;
 
 /**
- * session事件
+ * session创建事件
  * @author YiHui.He
  */
-public class SessionEvent extends EventObject {
+public class SessionCreateEvent extends ApplicationEvent {
 
     /**
      * 构造方法
@@ -17,7 +18,7 @@ public class SessionEvent extends EventObject {
      * @param session session
      * @throws IllegalArgumentException if session is null.
      */
-    public SessionEvent(Object session) {
+    public SessionCreateEvent(Object session) {
         super(session);
     }
 

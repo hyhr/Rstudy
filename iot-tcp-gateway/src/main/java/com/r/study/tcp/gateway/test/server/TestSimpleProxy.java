@@ -2,8 +2,8 @@ package com.r.study.tcp.gateway.test.server;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import com.r.study.tcp.gateway.server.codec.MessageBuf;
-import com.r.study.tcp.gateway.tcp.invoke.ApiProxy;
+import com.r.study.tcp.gateway.api.codec.protobuf.MessageBuf;
+import com.r.study.tcp.gateway.api.invoke.ApiProxy;
 import com.r.study.tcp.gateway.message.MessageWrapper;
 import com.r.study.tcp.gateway.message.SystemMessage;
 import com.r.study.tcp.gateway.test.data.Login;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class TestSimpleProxy implements ApiProxy {
 
     @Override
-    public MessageWrapper invoke(SystemMessage sMsg, MessageBuf.JMTransfer message) {
+    public MessageWrapper send(SystemMessage sMsg, MessageBuf.JMTransfer message) {
         ByteString body = message.getBody();
 
         if (message.getCmd() == 1000) {

@@ -1,10 +1,10 @@
 package com.r.study.tcp.gateway.server;
 
+import com.r.study.tcp.gateway.api.codec.ICodec;
 import com.r.study.tcp.gateway.connector.TcpConnector;
-import com.r.study.tcp.gateway.tcp.invoke.ApiProxy;
+import com.r.study.tcp.gateway.api.invoke.ApiProxy;
 import com.r.study.tcp.gateway.tcp.notify.NotifyProxy;
 
-import io.netty.handler.codec.protobuf.ProtobufDecoder;
 import org.springframework.stereotype.Component;
 
 /**
@@ -19,27 +19,21 @@ public class ServerTransportConfig {
      */
     private TcpConnector tcpConnector = null;
     /**
-     * codec
-     */
-    private final ProtobufDecoder decoder = null;
-    /**
      * invoke
      */
-    private ApiProxy proxy = null;
-    private NotifyProxy notify = null;
+    private ApiProxy proxy;
+    private NotifyProxy notify;
+    private ICodec codec;
 
-    public ServerTransportConfig(TcpConnector tcpConnector, ApiProxy proxy, NotifyProxy notify) {
+    public ServerTransportConfig(TcpConnector tcpConnector, ApiProxy proxy, NotifyProxy notify, ICodec codec) {
         this.tcpConnector = tcpConnector;
         this.proxy = proxy;
         this.notify = notify;
+        this.codec = codec;
     }
 
     public TcpConnector getTcpConnector() {
         return tcpConnector;
-    }
-
-    public ProtobufDecoder getDecoder() {
-        return decoder;
     }
 
     public ApiProxy getProxy() {
@@ -48,5 +42,9 @@ public class ServerTransportConfig {
 
     public NotifyProxy getNotify() {
         return notify;
+    }
+
+    public ICodec getCodec() {
+        return codec;
     }
 }

@@ -1,9 +1,9 @@
 package com.r.study.tcp.gateway.server;
 
 import com.r.study.tcp.gateway.connector.TcpConnector;
-import com.r.study.tcp.gateway.server.codec.MessageBuf;
+import com.r.study.tcp.gateway.api.codec.protobuf.MessageBuf;
 import com.r.study.tcp.gateway.constant.Constants;
-import com.r.study.tcp.gateway.tcp.invoke.ApiProxy;
+import com.r.study.tcp.gateway.api.invoke.ApiProxy;
 import com.r.study.tcp.gateway.message.MessageWrapper;
 import com.r.study.tcp.gateway.message.SystemMessage;
 import com.r.study.tcp.gateway.tcp.notify.NotifyProxy;
@@ -18,7 +18,6 @@ import org.apache.commons.lang3.StringUtils;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
-//public class TcpServerHandler extends ChannelHandlerAdapter {
 @ChannelHandler.Sharable
 @Slf4j
 public class TcpServerHandler extends ChannelInboundHandlerAdapter {
@@ -34,14 +33,17 @@ public class TcpServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object o) throws Exception {
+    public void channelRead(ChannelHandlerContext ctx, Object o) {
         try {
+            //校验数据
+            //数据处理
+            //下发回复
             if (o instanceof MessageBuf.JMTransfer) {
                 SystemMessage sMsg = generateSystemMessage(ctx);
                 MessageBuf.JMTransfer message = (MessageBuf.JMTransfer) o;
                 // inbound
                 if (message.getFormat() == SEND) {
-                    MessageWrapper wrapper = proxy.invoke(sMsg, message);
+                    MessageWrapper wrapper = proxy.send(sMsg, message);
                     if (wrapper != null)
                         this.receive(ctx, wrapper);
                 }
@@ -58,21 +60,25 @@ public class TcpServerHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
-    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+    @Override
+    public void channelRegistered(ChannelHandlerContext ctx) {
         log.debug("TcpServerHandler Connected from {" +
                 NetUtils.channelToString(ctx.channel().remoteAddress(), ctx.channel().localAddress()) + "}");
     }
 
-    public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+    @Override
+    public void channelUnregistered(ChannelHandlerContext ctx) {
         log.debug("TcpServerHandler Disconnected from {" +
                 NetUtils.channelToString(ctx.channel().remoteAddress(), ctx.channel().localAddress()) + "}");
     }
 
+    @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
         log.debug("TcpServerHandler channelActive from (" + getRemoteAddress(ctx) + ")");
     }
 
+    @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelInactive(ctx);
         log.debug("TcpServerHandler channelInactive from (" + getRemoteAddress(ctx) + ")");
@@ -83,7 +89,8 @@ public class TcpServerHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         log.warn("TcpServerHandler (" + getRemoteAddress(ctx) + ") -> Unexpected exception from downstream." + cause);
         String sessionId0 = getChannelSessionHook(ctx);
         if (StringUtils.isNotBlank(sessionId0)) {

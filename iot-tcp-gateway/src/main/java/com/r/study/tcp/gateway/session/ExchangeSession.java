@@ -1,12 +1,10 @@
 package com.r.study.tcp.gateway.session;
 
 import com.r.study.tcp.gateway.connector.Connection;
-import com.r.study.tcp.gateway.listener.SessionListener;
-import com.r.study.tcp.gateway.listener.event.SessionEvent;
+import com.r.study.tcp.gateway.listener.event.SessionCreateEvent;
+import com.r.study.tcp.gateway.listener.event.SessionDestroyEvent;
+import com.r.study.tcp.gateway.utils.SpringUtil;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * sessionEx
@@ -19,11 +17,6 @@ public class ExchangeSession extends SessionValid {
      * sessionId
      */
     private String sessionId = null;
-
-    /**
-     * session绑定的监听器
-     */
-    private transient List<SessionListener> listeners = new CopyOnWriteArrayList<>();
 
     /**
      * session关联的连接
@@ -53,22 +46,10 @@ public class ExchangeSession extends SessionValid {
         }
         connecting = true;
         connection.connect();
-        addSessionEvent();
+        SpringUtil.publishEvent(new SessionCreateEvent(this));
 
         connecting = false;
         log.debug("the session " + sessionId + " is ready!");
-    }
-
-    private void addSessionEvent() {
-        SessionEvent event = new SessionEvent(this);
-        for (SessionListener listener : listeners) {
-            try {
-                listener.sessionCreated(event);
-                log.info("SessionListener " + listener + " .sessionCreated() is invoked successfully!");
-            } catch (Exception e) {
-                log.error("addSessionEvent error.", e);
-            }
-        }
     }
 
     /**
@@ -97,15 +78,7 @@ public class ExchangeSession extends SessionValid {
             // Mark this session as "being closed"
             closing = true;
             if (notify) {
-                SessionEvent event = new SessionEvent(this);
-                for (SessionListener listener : listeners) {
-                    try {
-                        listener.sessionDestroyed(event);
-                        log.debug("SessionListener " + listener + " .sessionDestroyed() is invoked successfully!");
-                    } catch (Exception e) {
-                        log.error("sessionDestroyed error! " + e);
-                    }
-                }
+                SpringUtil.publishEvent(new SessionDestroyEvent(this));
             }
             setValid(false);
 
@@ -129,8 +102,6 @@ public class ExchangeSession extends SessionValid {
         sessionManager.removeSession(this);
 
         // Reset the instance variables associated with this Session
-        listeners.clear();
-        listeners = null;
         creationTime = 0L;
         connecting = false;
         closing = false;
@@ -156,28 +127,6 @@ public class ExchangeSession extends SessionValid {
         return false;
     }
 
-    /**
-     * Add a session event listener to this component.
-     */
-    @Override
-    public void addSessionListener(SessionListener listener) {
-        if (null == listener) {
-            throw new IllegalArgumentException("addSessionListener listener");
-        }
-        listeners.add(listener);
-    }
-
-    /**
-     * Remove a session event listener from this component.
-     */
-    @Override
-    public void removeSessionListener(SessionListener listener) {
-        if (listener == null) {
-            throw new IllegalArgumentException("removeSessionListener listener");
-        }
-        listeners.remove(listener);
-    }
-
     @Override
     public void setSessionId(String sessionId) {
         this.sessionId = sessionId;
@@ -186,16 +135,6 @@ public class ExchangeSession extends SessionValid {
     @Override
     public String getSessionId() {
         return sessionId;
-    }
-
-    @Override
-    public void setSessionManager(SessionManager sessionManager) {
-        this.sessionManager = sessionManager;
-    }
-
-    @Override
-    public SessionManager getSessionManager() {
-        return sessionManager;
     }
 
     @Override

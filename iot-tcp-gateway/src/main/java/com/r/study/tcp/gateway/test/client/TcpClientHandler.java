@@ -1,6 +1,6 @@
 package com.r.study.tcp.gateway.test.client;
 
-import com.r.study.tcp.gateway.server.codec.MessageBuf;
+import com.r.study.tcp.gateway.api.codec.protobuf.MessageBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
