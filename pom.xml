@@ -13,6 +13,12 @@
         <module>test</module>
         <module>monkey-api-sign-core</module>
         <module>reactor</module>
-        <module>iot-tcp-gateway</module>
+        <module>iot-tcp-gateway-core</module>
+        <module>iot-tcp-gateway-application</module>
     </modules>
+    
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+    </properties>
 </project>
