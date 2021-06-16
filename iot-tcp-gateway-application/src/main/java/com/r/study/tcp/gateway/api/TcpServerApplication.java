@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
  * @author YiHui.He
  */
 @EnableAsync(proxyTargetClass = true)
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.r.study.tcp.gateway.**")
 public class TcpServerApplication {
 
     public static void main(String[] args) {

@@ -1,6 +1,6 @@
 package com.r.study.tcp.gateway.server;
 
-import com.r.study.tcp.gateway.api.config.GatewayConfig;
+import com.r.study.tcp.gateway.config.GatewayConfig;
 import com.r.study.tcp.gateway.exception.InitErrorException;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;

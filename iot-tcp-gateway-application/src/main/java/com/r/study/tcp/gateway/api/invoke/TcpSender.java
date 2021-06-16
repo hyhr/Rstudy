@@ -1,7 +1,7 @@
-package com.r.study.tcp.gateway.api.send;
+package com.r.study.tcp.gateway.api.invoke;
 
 import com.r.study.tcp.gateway.connector.Connector;
-import com.r.study.tcp.gateway.api.message.MessageWrapper;
+import com.r.study.tcp.gateway.message.MessageWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class TcpSender implements Sender {
 
-    private Connector tcpConnector;
+    private final Connector tcpConnector;
 
     public TcpSender(Connector tcpConnector) {
         this.tcpConnector = tcpConnector;

@@ -1,7 +1,7 @@
 package com.r.study.tcp.gateway.connector;
 
 import com.r.study.tcp.gateway.session.Session;
-import com.r.study.tcp.gateway.api.message.MessageWrapper;
+import com.r.study.tcp.gateway.message.MessageWrapper;
 
 import com.r.study.tcp.gateway.session.TcpSessionManager;
 import io.netty.channel.ChannelHandlerContext;

@@ -1,6 +1,6 @@
-package com.r.study.tcp.gateway.api.send;
+package com.r.study.tcp.gateway.api.invoke;
 
-import com.r.study.tcp.gateway.api.message.MessageWrapper;
+import com.r.study.tcp.gateway.message.MessageWrapper;
 
 public interface Sender {
 

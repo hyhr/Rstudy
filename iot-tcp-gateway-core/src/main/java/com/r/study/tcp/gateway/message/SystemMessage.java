@@ -1,4 +1,4 @@
-package com.r.study.tcp.gateway.api.message;
+package com.r.study.tcp.gateway.message;
 import java.io.Serializable;
 
 /**

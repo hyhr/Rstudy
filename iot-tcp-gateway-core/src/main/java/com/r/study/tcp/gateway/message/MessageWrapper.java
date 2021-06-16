@@ -1,4 +1,4 @@
-package com.r.study.tcp.gateway.api.message;
+package com.r.study.tcp.gateway.message;
 
 import java.io.Serializable;
 
@@ -6,7 +6,7 @@ import java.io.Serializable;
  * 消息wrapper
  * @author YiHui.He
  */
-public class MessageWrapper implements Serializable {
+public class MessageWrapper<T> implements Serializable {
 
     /**
      * 协议
@@ -19,14 +19,14 @@ public class MessageWrapper implements Serializable {
     /**
      * 消息体
      */
-    private Object body;
+    private T body;
 
     private Long seq;
 
     private MessageWrapper() {
     }
 
-    public MessageWrapper(MessageProtocol protocol, String sessionId, Object body) {
+    public MessageWrapper(MessageProtocol protocol, String sessionId, T body) {
         this.protocol = protocol;
         this.sessionId = sessionId;
         this.body = body;
@@ -80,11 +80,11 @@ public class MessageWrapper implements Serializable {
         this.sessionId = sessionId;
     }
 
-    public Object getBody() {
+    public T getBody() {
         return body;
     }
 
-    public void setBody(Object body) {
+    public void setBody(T body) {
         this.body = body;
     }
 

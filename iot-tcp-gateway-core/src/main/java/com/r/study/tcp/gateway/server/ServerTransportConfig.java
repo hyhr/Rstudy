@@ -1,9 +1,8 @@
 package com.r.study.tcp.gateway.server;
 
-import com.r.study.tcp.gateway.api.codec.ICodec;
+import com.r.study.tcp.gateway.api.handler.AbstractChannelReadHandler;
+import com.r.study.tcp.gateway.codec.ICodec;
 import com.r.study.tcp.gateway.connector.TcpConnector;
-import com.r.study.tcp.gateway.api.invoke.ApiProxy;
-import com.r.study.tcp.gateway.api.notify.NotifyProxy;
 
 import org.springframework.stereotype.Component;
 
@@ -14,21 +13,16 @@ import org.springframework.stereotype.Component;
 @Component
 public class ServerTransportConfig {
 
+    private TcpConnector tcpConnector = null;
     /**
      * handler
      */
-    private TcpConnector tcpConnector = null;
-    /**
-     * invoke
-     */
-    private ApiProxy proxy;
-    private NotifyProxy notify;
+    private AbstractChannelReadHandler handler;
     private ICodec codec;
 
-    public ServerTransportConfig(TcpConnector tcpConnector, ApiProxy proxy, NotifyProxy notify, ICodec codec) {
+    public ServerTransportConfig(TcpConnector tcpConnector, AbstractChannelReadHandler handler, ICodec codec) {
         this.tcpConnector = tcpConnector;
-        this.proxy = proxy;
-        this.notify = notify;
+        this.handler = handler;
         this.codec = codec;
     }
 
@@ -36,12 +30,8 @@ public class ServerTransportConfig {
         return tcpConnector;
     }
 
-    public ApiProxy getProxy() {
-        return proxy;
-    }
-
-    public NotifyProxy getNotify() {
-        return notify;
+    public AbstractChannelReadHandler getHandler() {
+        return handler;
     }
 
     public ICodec getCodec() {

@@ -1,6 +1,6 @@
 package com.r.study.tcp.gateway.connector;
 
-import com.r.study.tcp.gateway.api.message.MessageWrapper;
+import com.r.study.tcp.gateway.message.MessageWrapper;
 import com.r.study.tcp.gateway.session.Session;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
@@ -18,10 +18,10 @@ public class TcpConnector extends ExchangeTcpConnector {
 
 
     @Override
-    public void init() { }
+    public void init() {}
 
-    @PreDestroy
     @Override
+    @PreDestroy
     public void destroy() {
         for (Session session : tcpSessionManager.getSessions()) {
             session.close();

@@ -1,4 +1,4 @@
-package com.r.study.tcp.gateway.api.config;
+package com.r.study.tcp.gateway.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -13,5 +13,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties(prefix = "gateway")
 public class GatewayConfig {
+    /**
+     * 监听端口
+     */
     private Integer port;
 }

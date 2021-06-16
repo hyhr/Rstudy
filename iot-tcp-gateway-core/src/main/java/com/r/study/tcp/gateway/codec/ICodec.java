@@ -1,4 +1,4 @@
-package com.r.study.tcp.gateway.api.codec;
+package com.r.study.tcp.gateway.codec;
 
 
 import com.google.protobuf.MessageLiteOrBuilder;

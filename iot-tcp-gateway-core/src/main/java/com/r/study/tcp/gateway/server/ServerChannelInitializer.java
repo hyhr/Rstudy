@@ -1,7 +1,6 @@
 package com.r.study.tcp.gateway.server;
 
-import com.r.study.tcp.gateway.api.codec.ICodec;
-import com.r.study.tcp.gateway.api.codec.protobuf.ProtobufCodec;
+import com.r.study.tcp.gateway.codec.ICodec;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -22,7 +21,7 @@ public class ServerChannelInitializer extends ChannelInitializer<SocketChannel> 
 
     @Override
     protected void initChannel(SocketChannel socketChannel) {
-        ICodec codec = new ProtobufCodec();
+        ICodec codec = config.getCodec();
         ChannelPipeline pipeline = socketChannel.pipeline();
         pipeline.addLast("frameDecoder", codec.getFrameDecoder());
         pipeline.addLast("decoder", codec.getDecoder());
