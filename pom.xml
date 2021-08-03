@@ -15,6 +15,7 @@
         <module>reactor</module>
         <module>iot-tcp-gateway-core</module>
         <module>iot-tcp-gateway-application</module>
+        <module>cloud-oauth2-parent</module>
     </modules>
     
     <dependencyManagement>

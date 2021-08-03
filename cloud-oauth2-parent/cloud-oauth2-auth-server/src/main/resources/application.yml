@@ -1,0 +1,44 @@
+server:
+  port: 8090
+  servlet:
+    context-path: /auth
+spring:
+  datasource:
+    username: root
+    password: root
+    url: jdbc:mysql://127.0.0.1:3306/study-security?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8
+
+  security:
+    oauth2:
+      client:
+        registration:
+          qq:
+            client-id: YOUR CLIENT ID GOES HERE
+            client-secret: YOUR CLIENT SECRET GOES HERE
+            scope:
+core:
+  security:
+    code:
+      image-code:
+        code-count: 6
+        width: 260
+        height: 100
+        expire-in: 60
+      sms-code:
+        code-count: 8
+        expire-in: 60
+    browser:
+      login-page: /login.html
+      login-Type: JSON
+      remember-me-seconds: 604800
+    white-list:
+      - "/swagger-resources/configuration/ui" # 用来获取支持的动作
+      - "/swagger-resources" # 用来获取api-docs的URL
+      - "/swagger-resources/configuration/security" # 安全选择
+      - "/swagger-ui/**" # swagger3.0，访问地址是/swagger-ui/index.html
+      - "/authentication/require"
+      - "/code/**"
+logging:
+  level:
+    root: debug
+    sun: info
