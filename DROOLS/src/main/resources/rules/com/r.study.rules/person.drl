@@ -1,0 +1,24 @@
+package rules.com.r.study.rules
+
+import com.r.study.drools.entity.Person;
+import com.r.study.drools.actions.PersonRuleAction;
+
+// 根据名字匹配指定的人
+rule "1.find target person"
+    when
+        persion : Person(name == "bob")
+        and
+        Person(PersonRuleAction.test())
+    then
+        PersonRuleAction.doParse(persion, drools.getRule());
+        System.out.println("Rule name is [" + drools.getRule().getName() + "]");
+        System.out.println("Rule package is [" + drools.getRule().getPackageName() + "]");
+end
+
+// 根据年龄匹配找到打工人
+rule "2.find the work person"
+    when
+        persion : Person( age >= 25 && age < 65 )
+    then
+        System.out.println( persion + " is a work person！" );
+end

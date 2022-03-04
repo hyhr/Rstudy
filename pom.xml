@@ -20,6 +20,7 @@
     
     <dependencyManagement>
         <dependencies>
+            
             <dependency>
                 <groupId>com.r.study</groupId>
                 <artifactId>iot-tcp-gateway-core</artifactId>
@@ -32,7 +33,19 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-    
+    <dependencies>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.7.11</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.asprise.ocr/java-ocr-api -->
+        <dependency>
+            <groupId>com.asprise.ocr</groupId>
+            <artifactId>java-ocr-api</artifactId>
+            <version>15.3.0.3</version>
+        </dependency>
+    </dependencies>
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>

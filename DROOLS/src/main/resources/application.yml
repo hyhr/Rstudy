@@ -1,0 +1,11 @@
+server:
+  port: 8080
+
+spring:
+  drools:
+    path: classpath:rules/**/*.drl
+    # 可以指定全局的mode，选择stream或cloud 有无序区别
+    mode: cloud
+    # 指定规则文件自动更新的周期，单位秒，默认30秒扫描一次
+    update: 10
+    listener: on
